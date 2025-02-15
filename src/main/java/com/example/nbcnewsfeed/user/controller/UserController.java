@@ -7,10 +7,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +29,16 @@ public class UserController {
                 signupDto.getStatusMessage()
         );
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 사용자 조회
+    // 아이디, 닉네임으로 조회 + 전체 조회
+    @GetMapping
+    public ResponseEntity<List<UserResponseDto>> findUsers(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String nickname
+    ){
+        List<UserResponseDto> userResponseDtoList = userService.findUsers(id, nickname);
+        return new ResponseEntity<>(userResponseDtoList,HttpStatus.OK);
     }
 }
