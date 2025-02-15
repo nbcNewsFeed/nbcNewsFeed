@@ -4,7 +4,9 @@ import com.example.nbcnewsfeed.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,5 +24,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("id") Long id,
             @Param("nickname") String nickname
     );
+
+    // 아이디로 사용자 조회
+    default User findByIdElseOrThrow(Long id){
+        return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 아이디는 존재하지 않습니다."));
+    }
 
 }
