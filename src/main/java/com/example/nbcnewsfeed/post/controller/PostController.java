@@ -29,7 +29,9 @@ public class PostController {
 //            @SessionAttribute(name = Const.LOGIN_USER) Long userId;
             @Validated @RequestBody PostSaveRequestDto requestDto
     ) {
-        return new ResponseEntity<>(postService.save(requestDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(postService.save(
+//                userId,
+                requestDto), HttpStatus.CREATED);
     }
 
     //게시글 다건 조회(R)
@@ -48,18 +50,31 @@ public class PostController {
 
     //게시글 수정(U)
     @PutMapping("/posts/{id}")
-    public PostUpdateResponseDto update(
+    public ResponseEntity<PostUpdateResponseDto> update(
             @PathVariable Long id,
             //토큰 받아 올 자리
 //            @SessionAttribute(name = Const.LOGIN_USER) Long userId;
-            @RequestBody PostUpdateRequestDto requestDto
+            @Validated @RequestBody PostUpdateRequestDto requestDto
             ) {
-        return postService.update(
+        return ResponseEntity.ok(postService.update(
                 id,
 //                userId,
                 requestDto
-        );
+        ));
     }
 
+    //게시글 삭제(D)
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity<Void> deleteById(
+            @PathVariable Long id
+            //토큰 받아 올 자리
+//            , @SessionAttribute(name = Const.LOGIN_USER) Long userId;
 
+    ) {
+        postService.deleteById(
+                id
+//                , userId
+        );
+        return ResponseEntity.ok().build();
+    }
 }

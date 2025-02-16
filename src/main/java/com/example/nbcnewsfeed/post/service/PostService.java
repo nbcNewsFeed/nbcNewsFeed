@@ -22,9 +22,7 @@ public class PostService {
 
     @Transactional
     public PostSaveResponseDto save(
-            //userID 받아야 함
-//            @SessionAttribute(name = Const.LOGIN_USER) Long userId;
-            //imageUrl, contents 입력받음
+//            Long userId,
             PostSaveRequestDto requestDto) {
 //        User user = userRepository.findById(userId);
         Post post = new Post(
@@ -94,5 +92,21 @@ public class PostService {
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
+    }
+
+    @Transactional
+    public void deleteById(
+            Long postId
+//            , Long userId
+    ) {
+        //post null 검증
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+        );
+        //post 작성자가 맞는지 검증
+//        if(!userId.equals(post.getUser().getId())) {
+//            throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
+//        }
+        postRepository.deleteById(postId);
     }
 }
