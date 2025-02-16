@@ -13,16 +13,20 @@ public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    //Usre class N:1 연관관계 매핑
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
+//    private User user;
     private String imageUrl;
     private String contents;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    public Post(String imageUrl, User user, String contents) {
+    public Post(
+//            User user,
+            String imageUrl,
+            String contents
+    ) {
+//        this.user = user;
         this.imageUrl = imageUrl;
-        this.user = user;
         this.contents = contents;
     }
 }

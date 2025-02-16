@@ -14,11 +14,13 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
+    //게시글 생성일시
     @CreatedDate
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
+    //게시글 수정일시
     @LastModifiedDate
     @Column
     @Temporal(TemporalType.TIMESTAMP)
