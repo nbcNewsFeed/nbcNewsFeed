@@ -1,11 +1,11 @@
 package com.example.nbcnewsfeed.post.entity;
 
-import com.example.nbcnewsfeed.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Table(name = "posts")
+@Filter(name = "activePostFilter", condition = "deleted_at is null")
+@FilterDef(name = "activePostFilter")
 public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,5 +48,9 @@ public class Post extends BaseEntity {
             String contents) {
         this.imageUrl = imageUrl;
         this.contents = contents;
+    }
+
+    public void createDeletedAt(LocalDateTime now) {
+        this.deletedAt = now;
     }
 }

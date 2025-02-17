@@ -50,19 +50,36 @@ public class PostService {
         );
     }
 
-//    @Transactional(readOnly = true)
-//    public List<PostResponseDto> findAll() {
-//        return postRepository.findAll().stream()
-//                .map(post -> new PostResponseDto(
-//                        post.getId(),
-////                        post.getUser().getId(),
-//                        post.getImageUrl(),
-//                        post.getContents(),
-//                        post.getCreatedAt(),
-//                        post.getModifiedAt()
-//                )
-//        ).collect(Collectors.toList());
-//    }
+    // 한 페이지 당 10 개의 post 조회
+    @Transactional(readOnly = true)
+    public Page<PostPageResponseDto> findAllPage(int page, int size) {
+        // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
+        int adjustedPage = (page > 0) ? page - 1 : 0;
+        // pageable 객체 생성, 수정일 기준 내림차순 정렬
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        // Post Page 조회
+        Page<Post> postPage = postRepository.findAll(pageable);
+        // Post ID 리스트 추출
+        List<Long> postIds = postPage.stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+        // CommentCountDto 클래스, countByPostIds 메서드 필요
+        // 별도 쿼리로 댓글 수 조회
+        //todo domain 별 repository 분리 -> commentservice 에서 commentrepository 로 접근
+        List<CommentCountDto> countResults = commentRepository.countByPostIds(postIds);
+        Map<Long, Long> commentCountMap = countResults.stream()
+                .collect(Collectors.toMap(CommentCountDto::getPostId, CommentCountDto::getCount));
+        // 각 Post를 PostPageResponseDto로 변환 (댓글 수는 Long을 int로 변환)
+        return postPage.map(post -> new PostPageResponseDto(
+                post.getId(),
+//                post.getUserId(),
+                post.getImageUrl(),
+                post.getContents(),
+                commentCountMap.getOrDefault(post.getId(), 0L).intValue(),
+                post.getCreatedAt(),
+                post.getModifiedAt()
+        ));
+    }
 
     @Transactional(readOnly = true)
     public PostResponseDto findById(Long id) {
@@ -117,7 +134,7 @@ public class PostService {
 //        if(!userId.equals(post.getUser().getId())) {
 //            throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
 //        }
-        post.setDeletedAt(LocalDateTime.now());
+        post.createDeletedAt(LocalDateTime.now());
     }
 
     // 2주가 지난 사용자 물리 삭제
@@ -129,35 +146,5 @@ public class PostService {
         if (!postToDelete.isEmpty()) {
             postRepository.deleteAll(postToDelete);
         }
-    }
-
-    @Transactional(readOnly = true)
-    public Page<PostPageResponseDto> findAllPage(int page, int size) {
-        // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
-        int adjustedPage = (page > 0) ? page -1 : 0;
-        // pageable 객체 생성, 수정일 기준 내림차순 정렬
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        // Post Page 조회
-        Page<Post> postPage = postRepository.findAll(pageable);
-        // Post ID 리스트 추출
-        List<Long> postIds = postPage.stream()
-                .map(Post::getId)
-                .collect(Collectors.toList());
-        // CommentCountDto 클래스, countByPostIds 메서드 필요
-        // 별도 쿼리로 댓글 수 조회
-        //todo domain 별 repository 분리 -> commentservice 에서 commentrepository 로 접근
-        List<CommentCountDto> countResults = commentRepository.countByPostIds(postIds);
-        Map<Long, Long> commentCountMap = countResults.stream()
-                .collect(Collectors.toMap(CommentCountDto::getPostId, CommentCountDto::getCount));
-        // 각 Post를 PostPageResponseDto로 변환 (댓글 수는 Long을 int로 변환)
-        return postPage.map(post -> new PostPageResponseDto(
-                post.getId(),
-//                post.getUserId(),
-                post.getImageUrl(),
-                post.getContents(),
-                commentCountMap.getOrDefault(post.getId(), 0L).intValue(),
-                post.getCreatedAt(),
-                post.getModifiedAt()
-        ));
     }
 }

@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class PostController {
@@ -34,11 +32,15 @@ public class PostController {
                 requestDto), HttpStatus.CREATED);
     }
 
-//    //게시글 다건 조회(R)
-//    @GetMapping("/posts")
-//    public ResponseEntity<List<PostResponseDto>> findAll() {
-//        return ResponseEntity.ok(postService.findAll());
-//    }
+    //게시글 다건 조회(R) 페이지네이션
+    @GetMapping("/posts")
+    public ResponseEntity<Page<PostPageResponseDto>> findAllPage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<PostPageResponseDto> result = postService.findAllPage(page, size);
+        return ResponseEntity.ok(result);
+    }
 
     //게시글 단건 조회(R)
     @GetMapping("/posts/{id}")
@@ -56,7 +58,7 @@ public class PostController {
             //토큰 받아 올 자리
 //            @SessionAttribute(name = Const.LOGIN_USER) Long userId;
             @Validated @RequestBody PostUpdateRequestDto requestDto
-            ) {
+    ) {
         return ResponseEntity.ok(postService.update(
                 id,
 //                userId,
@@ -80,13 +82,4 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    //post page API
-    @GetMapping("/posts")
-    public ResponseEntity<Page<PostPageResponseDto>> findAllPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<PostPageResponseDto> result = postService.findAllPage(page, size);
-        return ResponseEntity.ok(result);
-    }
 }
