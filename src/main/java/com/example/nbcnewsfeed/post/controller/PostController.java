@@ -83,11 +83,11 @@ public class PostController {
 
     //삭제된 게시글 복구(삭제된 후 2주 지나기 전)
     @PutMapping("/posts/{postId}")
-    public PostResponseDto restore(
+    public ResponseEntity<PostResponseDto> restore(
             @PathVariable Long postId
             //토큰 받아 올 자리
 //            , @SessionAttribute(name = Const.LOGIN_USER) Long userId;
     ) {
-        postService.restore();
+        return ResponseEntity.ok(postService.restore(postId));
     }
 }

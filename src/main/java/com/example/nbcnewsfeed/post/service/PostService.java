@@ -8,6 +8,7 @@ import com.example.nbcnewsfeed.post.dto.response.PostSaveResponseDto;
 import com.example.nbcnewsfeed.post.dto.response.PostUpdateResponseDto;
 import com.example.nbcnewsfeed.post.entity.Post;
 import com.example.nbcnewsfeed.post.repository.PostRepository;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -148,14 +149,24 @@ public class PostService {
         }
     }
 
-    public PostResponseDto restore() {
+    @Transactional
+    public PostResponseDto restore(Long postId) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         //post 작성자가 맞는지 검증
 //        if(!userId.equals(post.getUser().getId())) {
-//            throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
+//            throw new IllegalArgumentException("작성자 본인만 게시글을 복구할 수 있습니다.");
 //        }
+        post.createDeletedAt(null);
+        return new PostResponseDto(
+                post.getId(),
+//                        post.getUser().getId(),
+                post.getImageUrl(),
+                post.getContents(),
+                post.getCreatedAt(),
+                post.getModifiedAt()
+        )
     }
 }
