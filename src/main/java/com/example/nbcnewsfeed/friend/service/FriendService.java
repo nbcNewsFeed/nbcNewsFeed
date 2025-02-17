@@ -99,6 +99,7 @@ public class FriendService {
         return friendshipList.stream().map(FriendshipListDto::toDto).collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteFriend(DeleteFriendshipDto requestDto) {
         User user1 = userService.findUserById(requestDto.getUser1Id());
         User user2 = userService.findUserById(requestDto.getUser2Id());
@@ -106,8 +107,8 @@ public class FriendService {
         Friendship friendship1 = friendshipRepository.findFriendshipsByUser1AndUser2(user1, user2);
         Friendship friendship2 = friendshipRepository.findFriendshipsByUser1AndUser2(user2, user1);
 
-        friendshipRepository.delete(friendship1);
-        friendshipRepository.delete(friendship2);
+        friendship1.softDelete();
+        friendship2.softDelete();
 
     }
 }
