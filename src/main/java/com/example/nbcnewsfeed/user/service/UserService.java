@@ -1,7 +1,7 @@
 package com.example.nbcnewsfeed.user.service;
 
 import com.example.nbcnewsfeed.common.config.PasswordEncoder;
-import com.example.nbcnewsfeed.user.dto.UserResponseDto;
+import com.example.nbcnewsfeed.user.dto.*;
 import com.example.nbcnewsfeed.user.entity.User;
 import com.example.nbcnewsfeed.user.exception.CustomException;
 import com.example.nbcnewsfeed.user.repository.UserRepository;
@@ -23,10 +23,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // signup -> 회원가입
-    public UserResponseDto signup(String email, String nickname, String password, String profileImageUrl, String statusMessage) {
-        checkEmailDuplication(email);
-        String encodedPassword = passwordEncoder.encode(password);
-        User signupUser = userRepository.save(new User(email, nickname, encodedPassword, profileImageUrl, statusMessage));
+    public UserResponseDto signup(UserSignupDto requestDto) {
+        checkEmailDuplication(requestDto.getEmail());
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+        User signupUser = userRepository.save(new User(
+                requestDto.getEmail(),
+                requestDto.getNickname(),
+                encodedPassword,
+                requestDto.getProfileImageUrl(),
+                requestDto.getStatusMessage()
+        ));
         return new UserResponseDto(signupUser.getNickname(), signupUser.getStatusMessage(), signupUser.getProfileImageUrl());
     }
 
@@ -39,20 +45,19 @@ public class UserService {
         return userList.stream().map(UserResponseDto::todto).toList();
     }
 
-    // 사용자 수정
-    // 프로필 사진, 닉네임, 한 줄 소개
+    // 사용자 수정 -> 프로필 사진, 닉네임, 한 줄 소개
     @Transactional
-    public UserResponseDto updateUser(Long currentUserId, String inputPassword, String newProfileImageUrl, String newNickname, String newStatusMessage) {
+    public UserResponseDto updateUser(Long currentUserId, ChangeUserDto requestDto) {
         User user = userRepository.findByIdOrElseThrow(currentUserId);
-        validPassword(inputPassword, user.getPassword());
-        if (sanitizeString(newProfileImageUrl) != null) {
-            user.setProfileImageUrl(newProfileImageUrl);
+        validPassword(requestDto.getInputPassword(), user.getPassword());
+        if (sanitizeString(requestDto.getNewProfileImageUrl()) != null) {
+            user.changeProfileImageUrl(requestDto.getNewProfileImageUrl());
         }
-        if (sanitizeString(newStatusMessage) != null) {
-            user.setStatusMessage(newStatusMessage);
+        if (sanitizeString(requestDto.getNewStatusMessage()) != null) {
+            user.changeStatusMessage(requestDto.getNewStatusMessage());
         }
-        if (sanitizeString(newNickname) != null) {
-            user.setNickname(newNickname);
+        if (sanitizeString(requestDto.getNewNickname()) != null) {
+            user.changeNickname(requestDto.getNewNickname());
         }
         return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
     }
@@ -60,29 +65,29 @@ public class UserService {
     // 사용자 수정
     // 비밀번호
     @Transactional
-    public UserResponseDto updatePasswordUser(Long currentUserId, String inputPassword, String newPassword) {
+    public UserResponseDto updatePasswordUser(Long currentUserId, ChangePasswordDto requestDto) {
         User user = userRepository.findByIdOrElseThrow(currentUserId);
-        validPassword(inputPassword, user.getPassword());
-        if (sanitizeString(newPassword) != null) {
-            user.setPassword(passwordEncoder.encode(newPassword));
+        validPassword(requestDto.getInputPassword(), user.getPassword());
+        if (sanitizeString(requestDto.getNewPassword()) != null) {
+            user.changePassword(passwordEncoder.encode(requestDto.getNewPassword()));
         }
         return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
     }
 
     // 사용자 삭제 요청
     @Transactional
-    public void deleteUser(Long currentUserId, String inputPassword) {
+    public void deleteUser(Long currentUserId, DeleteUserRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrow(currentUserId);
-        validPassword(inputPassword, user.getPassword());
-        user.setDeletedAt(LocalDateTime.now());
+        validPassword(requestDto.getInputPassword(), user.getPassword());
+        user.changeDeletedAt(LocalDateTime.now());
     }
 
     // 삭제된 사용자 복구
     @Transactional
-    public UserResponseDto restoreUser(String email, String password) {
-        User user = userRepository.findByEmailOrElseThrow(email);
-        validPassword(password, user.getPassword());
-        user.setDeletedAt(null);
+    public UserResponseDto restoreUser(RestoreUserDto requestDto) {
+        User user = userRepository.findByEmailOrElseThrow(requestDto.getEmail());
+        validPassword(requestDto.getPassword(), user.getPassword());
+        user.changeDeletedAt(null);
         return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
     }
 
@@ -115,5 +120,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
     }
+
+
 
 }

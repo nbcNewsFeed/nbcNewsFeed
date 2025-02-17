@@ -27,13 +27,7 @@ public class UserController {
     @PostMapping("/signup")
     @Operation(summary = "사용자 생성", description = "사용자를 생성합니다.")
     public ResponseEntity<UserResponseDto> userSignup(@Valid @RequestBody UserSignupDto requestDto) {
-        UserResponseDto responseDto = userService.signup(
-                requestDto.getEmail(),
-                requestDto.getNickname(),
-                requestDto.getPassword(),
-                requestDto.getProfileImageUrl(),
-                requestDto.getStatusMessage()
-        );
+        UserResponseDto responseDto = userService.signup(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
@@ -48,7 +42,7 @@ public class UserController {
         return new ResponseEntity<>(userResponseDtoList, HttpStatus.OK);
     }
 
-    // 사용자 수정
+    // 사용자 수정 -> 프로필 사진, 닉네임, 한 줄 소개
     @PatchMapping("/me")
     @Operation(summary = "사용자 수정", description = "로그인한 사용자의 닉네임, 프로필 사진, 소개를 수정합니다.")
     public ResponseEntity<UserResponseDto> updateUser(
@@ -56,12 +50,7 @@ public class UserController {
             HttpServletRequest request
     ) {
         Long currentUserId = getCurrentUserId(request);
-        UserResponseDto userResponseDto = userService.updateUser(currentUserId,
-                requestDto.getInputPassword(),
-                requestDto.getNewProfileImageUrl(),
-                requestDto.getNewNickname(),
-                requestDto.getNewStatusMessage()
-        );
+        UserResponseDto userResponseDto = userService.updateUser(currentUserId, requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
@@ -73,10 +62,7 @@ public class UserController {
             HttpServletRequest request
     ) {
         Long currentUserId = getCurrentUserId(request);
-        UserResponseDto userResponseDto = userService.updatePasswordUser(currentUserId,
-                requestDto.getCurrentPassword(),
-                requestDto.getNewPassword()
-        );
+        UserResponseDto userResponseDto = userService.updatePasswordUser(currentUserId, requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
@@ -87,7 +73,7 @@ public class UserController {
             @RequestBody DeleteUserRequestDto requestDto,
             HttpServletRequest request) {
         Long currentUserId = getCurrentUserId(request);
-        userService.deleteUser(currentUserId, requestDto.getInputPassword());
+        userService.deleteUser(currentUserId, requestDto);
         request.getSession(false).invalidate();
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -98,7 +84,7 @@ public class UserController {
     public ResponseEntity<UserResponseDto> restoreUser(
             @RequestBody RestoreUserDto requestDto
     ) {
-        UserResponseDto userResponseDto = userService.restoreUser(requestDto.getEmail(), requestDto.getPassword());
+        UserResponseDto userResponseDto = userService.restoreUser(requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
