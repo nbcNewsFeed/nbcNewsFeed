@@ -51,13 +51,23 @@ public class FriendController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<FriendshipListDto>> getFriendshipList (@PathVariable Long userId){
-        List<FriendshipListDto> frinendshipList = friendService.getFrinendshipList(userId);
+        List<FriendshipListDto> frinendshipList = friendService.getFriendshipList(userId);
         return new ResponseEntity<>(frinendshipList, HttpStatus.OK);
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteFriend (@RequestBody DeleteFriendshipDto requestDto){
+        if (requestDto.getUser1Id().equals(requestDto.getUser2Id())){ //JWT 로그인 구현 이후에 변경
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신에게는 친구 삭제 요청이 불가능합니다.");
+        }
+
         friendService.deleteFriend(requestDto);
         return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteAllFriendByUserId(@PathVariable Long userId){
+        friendService.deleteAllFriendByUserId(userId);
+        return new ResponseEntity<>("해당 아이디의 친구관계 모두 삭제 완료", HttpStatus.OK);
     }
 }

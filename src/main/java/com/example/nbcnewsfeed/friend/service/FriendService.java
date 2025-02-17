@@ -13,6 +13,7 @@ import com.example.nbcnewsfeed.user.User;
 import com.example.nbcnewsfeed.user.UserClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FriendService {
     private final UserClient userService;
     private final FriendRequestRepository friendRequestRepository;
@@ -76,8 +78,10 @@ public class FriendService {
 
         if(requestDto.getIsAcceptOrReject()){
             findFriendRequest.updateFriendStatus(FriendStatus.ACCEPTED);
+
             Friendship friendship1 = new Friendship(senderUser, receiverUser);
             Friendship friendship2 = new Friendship(receiverUser, senderUser);
+
             friendshipRepository.save(friendship1);
             friendshipRepository.save(friendship2);
 
@@ -90,7 +94,7 @@ public class FriendService {
 
     }
 
-    public List<FriendshipListDto> getFrinendshipList(Long userId) {
+    public List<FriendshipListDto> getFriendshipList(Long userId) {
 
         User user = userService.findUserById(userId);
 
@@ -107,8 +111,26 @@ public class FriendService {
         Friendship friendship1 = friendshipRepository.findFriendshipsByUser1AndUser2(user1, user2);
         Friendship friendship2 = friendshipRepository.findFriendshipsByUser1AndUser2(user2, user1);
 
+        if(friendship1 ==null || friendship2 == null) {
+            throw new IllegalStateException("친구관계가 아닙니다.");
+        }
+
         friendship1.softDelete();
         friendship2.softDelete();
 
+
+    }
+
+    @Transactional
+    public void deleteAllFriendByUserId(Long userId){
+        User user = userService.findUserById(userId);
+        List<Friendship> friendshipsByUser = friendshipRepository.findFriendshipsByUser(user);
+
+        log.info("친구관계 :", friendshipsByUser.toString());
+
+        if(friendshipsByUser != null){
+            friendshipsByUser.forEach(Friendship::softDelete);
+        } else throw new IllegalStateException("해당 아이디는 삭제할 친구가 없습니다.");
     }
 }
+
