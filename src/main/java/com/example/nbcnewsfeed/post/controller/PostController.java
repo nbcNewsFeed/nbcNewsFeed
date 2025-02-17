@@ -43,43 +43,51 @@ public class PostController {
     }
 
     //게시글 단건 조회(R)
-    @GetMapping("/posts/{id}")
+    @GetMapping("/posts/{postId}")
     public ResponseEntity<PostResponseDto> findById(
-            @PathVariable Long id
+            @PathVariable Long postId
     ) {
-        return ResponseEntity.ok(postService.findById(id));
+        return ResponseEntity.ok(postService.findById(postId));
     }
 
 
     //게시글 수정(U)
-    @PutMapping("/posts/{id}")
+    @PutMapping("/posts/{postId}")
     public ResponseEntity<PostUpdateResponseDto> update(
-            @PathVariable Long id,
+            @PathVariable Long postId,
             //토큰 받아 올 자리
 //            @SessionAttribute(name = Const.LOGIN_USER) Long userId;
             @Validated @RequestBody PostUpdateRequestDto requestDto
     ) {
         return ResponseEntity.ok(postService.update(
-                id,
+                postId,
 //                userId,
                 requestDto
         ));
     }
 
-    //todo soft delete 구현 필요(filter 적용해야됨)
     //게시글 삭제(D)
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deleteById(
-            @PathVariable Long id
+            @PathVariable Long postId
             //토큰 받아 올 자리
 //            , @SessionAttribute(name = Const.LOGIN_USER) Long userId;
 
     ) {
         postService.deleteById(
-                id
+                postId
 //                , userId
         );
         return ResponseEntity.ok().build();
     }
 
+    //삭제된 게시글 복구(삭제된 후 2주 지나기 전)
+    @PutMapping("/posts/{postId}")
+    public PostResponseDto restore(
+            @PathVariable Long postId
+            //토큰 받아 올 자리
+//            , @SessionAttribute(name = Const.LOGIN_USER) Long userId;
+    ) {
+        postService.restore();
+    }
 }

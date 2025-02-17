@@ -147,4 +147,15 @@ public class PostService {
             postRepository.deleteAll(postToDelete);
         }
     }
+
+    public PostResponseDto restore() {
+        //post null 검증
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+        //post 작성자가 맞는지 검증
+//        if(!userId.equals(post.getUser().getId())) {
+//            throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
+//        }
+    }
 }
