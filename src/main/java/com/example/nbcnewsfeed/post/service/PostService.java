@@ -124,7 +124,7 @@ public class PostService {
         // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
         int adjustedPage = (page > 0) ? page -1 : 0;
         // pageable 객체 생성, 수정일 기준 내림차순 정렬
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         // Post Page 조회
         Page<Post> postPage = postRepository.findAll(pageable);
         // Post ID 리스트 추출
