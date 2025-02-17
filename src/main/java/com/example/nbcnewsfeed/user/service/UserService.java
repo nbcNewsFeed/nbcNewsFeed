@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class UserService {
     // 프로필 사진, 닉네임, 한 줄 소개
     @Transactional
     public UserResponseDto updateUser(Long currentUserId, String inputPassword, String newProfileImageUrl, String newNickname, String newStatusMessage) {
-        User user = userRepository.findByIdElseOrThrow(currentUserId);
+        User user = userRepository.findByIdOrElseThrow(currentUserId);
         validPassword(inputPassword, user.getPassword());
         if (sanitizeString(newProfileImageUrl) != null) {
             user.setProfileImageUrl(newProfileImageUrl);
@@ -57,7 +58,7 @@ public class UserService {
     // 비밀번호
     @Transactional
     public UserResponseDto updatePasswordUser(Long currentUserId, String inputPassword, String newPassword) {
-        User user = userRepository.findByIdElseOrThrow(currentUserId);
+        User user = userRepository.findByIdOrElseThrow(currentUserId);
         validPassword(inputPassword, user.getPassword());
         if (sanitizeString(newPassword) != null) {
             user.setPassword(newPassword);
@@ -68,9 +69,18 @@ public class UserService {
     // 사용자 삭제 요청
     @Transactional
     public void deleteUser(Long currentUserId, String inputPassword) {
-        User user = userRepository.findByIdElseOrThrow(currentUserId);
+        User user = userRepository.findByIdOrElseThrow(currentUserId);
         validPassword(inputPassword, user.getPassword());
         user.setDeletedAt(LocalDateTime.now());
+    }
+
+    // 삭제된 사용자 복구
+    @Transactional
+    public UserResponseDto restoreUser(String email, String password) {
+        User user = userRepository.findByEmailOrElseThrow(email);
+        validPassword(password, user.getPassword());
+        user.setDeletedAt(null);
+        return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
     }
 
     // 2주가 지난 사용자 물리 삭제
@@ -93,7 +103,7 @@ public class UserService {
 
     // 공백 제거 및 빈 문자열 null로 변환
     private String sanitizeString(String input) {
-        return (input != null && !input.trim().isEmpty()) ? input : null;
+        return StringUtils.hasText(input) ? input : null;
     }
 
     // 비밀번호 검증 메소드

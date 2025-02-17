@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -27,11 +28,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     );
 
     // 아이디로 사용자 조회
-    default User findByIdElseOrThrow(Long id){
+    default User findByIdOrElseThrow(Long id) {
         return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 아이디는 존재하지 않습니다."));
     }
 
     // 삭제 요청 후 2주 지난 사용자 삭제
     List<User> findAllByDeletedAtBefore(LocalDateTime dateTime);
 
+    // 이메일로 사용자 찾기
+    Optional<User> findByEmail(String email);
+
+    default User findByEmailOrElseThrow(String email) {
+        return findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 이메일은 존재하지 않습니다."));
+    }
 }
