@@ -51,6 +51,18 @@ public class UserService {
         return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
     }
 
+    // 사용자 수정
+    // 비밀번호
+    @Transactional
+    public UserResponseDto updatedPasswordUser(Long currentUserId, String inputPassword, String newPassword) {
+        User user = userRepository.findByIdElseOrThrow(currentUserId);
+        validPassword(inputPassword, user.getPassword());
+        if(sanitizeString(newPassword) != null){
+            user.setPassword(newPassword);
+        }
+        return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
+    }
+
     // 중복 이메일 체크
     private void checkEmailDuplication(String email) {
         if (userRepository.existsByEmail(email)) {

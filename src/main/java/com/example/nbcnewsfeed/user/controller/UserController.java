@@ -1,5 +1,6 @@
 package com.example.nbcnewsfeed.user.controller;
 
+import com.example.nbcnewsfeed.user.dto.PasswordChangeDto;
 import com.example.nbcnewsfeed.user.dto.UserResponseDto;
 import com.example.nbcnewsfeed.user.dto.UserSignupDto;
 import com.example.nbcnewsfeed.user.service.UserService;
@@ -54,18 +55,30 @@ public class UserController {
             @RequestParam(required = false) String newNickname,
             @RequestParam(required = false) String newStatusMessage,
             HttpServletRequest request
-    ){
+    ) {
         Long currentUserId = getCurrentUserId(request);
-        UserResponseDto userResponseDto = userService.updateUser(currentUserId,inputPassword,newProfileImageUrl,newNickname,newStatusMessage);
-        return new ResponseEntity<>(userResponseDto,HttpStatus.OK);
+        UserResponseDto userResponseDto = userService.updateUser(currentUserId, inputPassword, newProfileImageUrl, newNickname, newStatusMessage);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+    }
+
+    // 사용자 수정
+    // 비밀번호
+    @PatchMapping("me/password")
+    public ResponseEntity<UserResponseDto> updatedPasswordUser(
+            @RequestBody PasswordChangeDto userPasswordDto,
+            HttpServletRequest request
+    ) {
+        Long currentUserId = getCurrentUserId(request);
+        UserResponseDto userResponseDto = userService.updatedPasswordUser(currentUserId, userPasswordDto.getCurrentPassword(), userPasswordDto.getNewPassword());
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     // 세션 검증 로직
-    private Long getCurrentUserId(HttpServletRequest request){
+    private Long getCurrentUserId(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if(session == null || session.getAttribute("userId") == null){
+        if (session == null || session.getAttribute("userId") == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "권한이 없습니다.");
         }
-        return (Long)session.getAttribute("userId");
+        return (Long) session.getAttribute("userId");
     }
 }
