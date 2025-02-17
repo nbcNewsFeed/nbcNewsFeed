@@ -1,5 +1,6 @@
 package com.example.nbcnewsfeed.user.service;
 
+import com.example.nbcnewsfeed.common.config.PasswordEncoder;
 import com.example.nbcnewsfeed.user.dto.UserResponseDto;
 import com.example.nbcnewsfeed.user.entity.User;
 import com.example.nbcnewsfeed.user.exception.CustomException;
@@ -19,11 +20,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // signup -> 회원가입
     public UserResponseDto signup(String email, String nickname, String password, String profileImageUrl, String statusMessage) {
         checkEmailDuplication(email);
-        User signupUser = userRepository.save(new User(email, nickname, password, profileImageUrl, statusMessage));
+        String encodedPassword = passwordEncoder.encode(password);
+        User signupUser = userRepository.save(new User(email, nickname, encodedPassword, profileImageUrl, statusMessage));
         return new UserResponseDto(signupUser.getNickname(), signupUser.getStatusMessage(), signupUser.getProfileImageUrl());
     }
 
@@ -61,7 +64,7 @@ public class UserService {
         User user = userRepository.findByIdOrElseThrow(currentUserId);
         validPassword(inputPassword, user.getPassword());
         if (sanitizeString(newPassword) != null) {
-            user.setPassword(newPassword);
+            user.setPassword(passwordEncoder.encode(newPassword));
         }
         return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
     }
@@ -107,9 +110,9 @@ public class UserService {
     }
 
     // 비밀번호 검증 메소드
-    private void validPassword(String inputPassword, String rawPassword) {
-        if (!rawPassword.equals(inputPassword)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    private void validPassword(String inputPassword, String encodedRawPassword) {
+        if (!passwordEncoder.matches(inputPassword, encodedRawPassword)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
     }
 
