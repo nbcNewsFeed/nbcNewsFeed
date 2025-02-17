@@ -1,6 +1,6 @@
 package com.example.nbcnewsfeed.user;
 
-import com.example.nbcnewsfeed.BaseEntity;
+import com.example.nbcnewsfeed.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

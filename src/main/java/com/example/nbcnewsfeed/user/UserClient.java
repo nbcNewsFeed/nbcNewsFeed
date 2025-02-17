@@ -18,7 +18,7 @@ public class UserClient {
     }
 
     public User findUserById(Long userId) {
-        return userRepository.findUserByid(userId);
+        return userRepository.findByIdOrElseThrow(userId);
     }
 
 }
