@@ -1,6 +1,7 @@
 package com.example.nbcnewsfeed.friend.service;
 
 import com.example.nbcnewsfeed.friend.dto.CreateFriendRequestDto;
+import com.example.nbcnewsfeed.friend.dto.FriendshipListDto;
 import com.example.nbcnewsfeed.friend.dto.UpdateFriendRequestDto;
 import com.example.nbcnewsfeed.friend.entity.FriendRequest;
 import com.example.nbcnewsfeed.friend.entity.FriendStatus;
@@ -14,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -84,4 +88,14 @@ public class FriendService {
         }
 
     }
+
+    public List<FriendshipListDto> getFrinendshipList(Long userId) {
+
+        User user = userService.findUserById(userId);
+
+        List<Friendship> friendshipList = friendshipRepository.findFriendshipsByUser1(user);
+
+        return friendshipList.stream().map(FriendshipListDto::toDto).collect(Collectors.toList());
+    }
+
 }

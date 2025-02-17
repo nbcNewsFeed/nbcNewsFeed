@@ -1,6 +1,7 @@
 package com.example.nbcnewsfeed.friend.controller;
 
 import com.example.nbcnewsfeed.friend.dto.CreateFriendRequestDto;
+import com.example.nbcnewsfeed.friend.dto.FriendshipListDto;
 import com.example.nbcnewsfeed.friend.dto.UpdateFriendRequestDto;
 import com.example.nbcnewsfeed.friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,5 +46,11 @@ public class FriendController {
         }
 
         return new ResponseEntity<>(friendService.updateFriendRequest(requestDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<FriendshipListDto>> getFriendshipList (@PathVariable Long userId){
+        List<FriendshipListDto> frinendshipList = friendService.getFrinendshipList(userId);
+        return new ResponseEntity<>(frinendshipList, HttpStatus.OK);
     }
 }
