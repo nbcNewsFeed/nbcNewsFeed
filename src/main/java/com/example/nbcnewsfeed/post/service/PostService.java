@@ -8,8 +8,11 @@ import com.example.nbcnewsfeed.post.dto.response.PostUpdateResponseDto;
 import com.example.nbcnewsfeed.post.entity.Post;
 import com.example.nbcnewsfeed.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,7 +61,7 @@ public class PostService {
     public PostResponseDto findById(Long id) {
         //post null 검증
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         return new PostResponseDto(
                 post.getId(),
@@ -77,7 +80,7 @@ public class PostService {
             PostUpdateRequestDto requestDto) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         //post 작성자가 맞는지 검증
 //        if(!userId.equals(post.getUser().getId())) {
@@ -94,6 +97,7 @@ public class PostService {
         );
     }
 
+    //soft delete 구현 필요
     @Transactional
     public void deleteById(
             Long postId
@@ -101,7 +105,7 @@ public class PostService {
     ) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         //post 작성자가 맞는지 검증
 //        if(!userId.equals(post.getUser().getId())) {

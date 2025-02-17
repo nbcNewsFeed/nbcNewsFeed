@@ -5,8 +5,6 @@ import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
 import com.example.nbcnewsfeed.post.dto.response.PostResponseDto;
 import com.example.nbcnewsfeed.post.dto.response.PostSaveResponseDto;
 import com.example.nbcnewsfeed.post.dto.response.PostUpdateResponseDto;
-import com.example.nbcnewsfeed.post.entity.Post;
-import com.example.nbcnewsfeed.post.repository.PostRepository;
 import com.example.nbcnewsfeed.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -63,6 +61,7 @@ public class PostController {
         ));
     }
 
+    //soft delete 구현 필요
     //게시글 삭제(D)
     @DeleteMapping("/posts/{id}")
     public ResponseEntity<Void> deleteById(
