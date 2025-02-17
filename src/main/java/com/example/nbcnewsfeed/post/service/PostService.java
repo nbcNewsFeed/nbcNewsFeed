@@ -50,19 +50,19 @@ public class PostService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public List<PostResponseDto> findAll() {
-        return postRepository.findAll().stream()
-                .map(post -> new PostResponseDto(
-                        post.getId(),
-//                        post.getUser().getId(),
-                        post.getImageUrl(),
-                        post.getContents(),
-                        post.getCreatedAt(),
-                        post.getModifiedAt()
-                )
-        ).collect(Collectors.toList());
-    }
+//    @Transactional(readOnly = true)
+//    public List<PostResponseDto> findAll() {
+//        return postRepository.findAll().stream()
+//                .map(post -> new PostResponseDto(
+//                        post.getId(),
+////                        post.getUser().getId(),
+//                        post.getImageUrl(),
+//                        post.getContents(),
+//                        post.getCreatedAt(),
+//                        post.getModifiedAt()
+//                )
+//        ).collect(Collectors.toList());
+//    }
 
     @Transactional(readOnly = true)
     public PostResponseDto findById(Long id) {
@@ -145,6 +145,7 @@ public class PostService {
                 .collect(Collectors.toList());
         // CommentCountDto 클래스, countByPostIds 메서드 필요
         // 별도 쿼리로 댓글 수 조회
+        //todo domain 별 repository 분리 -> commentservice 에서 commentrepository 로 접근
         List<CommentCountDto> countResults = commentRepository.countByPostIds(postIds);
         Map<Long, Long> commentCountMap = countResults.stream()
                 .collect(Collectors.toMap(CommentCountDto::getPostId, CommentCountDto::getCount));

@@ -34,11 +34,11 @@ public class PostController {
                 requestDto), HttpStatus.CREATED);
     }
 
-    //게시글 다건 조회(R)
-    @GetMapping("/posts")
-    public ResponseEntity<List<PostResponseDto>> findAll() {
-        return ResponseEntity.ok(postService.findAll());
-    }
+//    //게시글 다건 조회(R)
+//    @GetMapping("/posts")
+//    public ResponseEntity<List<PostResponseDto>> findAll() {
+//        return ResponseEntity.ok(postService.findAll());
+//    }
 
     //게시글 단건 조회(R)
     @GetMapping("/posts/{id}")
@@ -47,6 +47,7 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.findById(id));
     }
+
 
     //게시글 수정(U)
     @PutMapping("/posts/{id}")
@@ -63,7 +64,7 @@ public class PostController {
         ));
     }
 
-    //soft delete 구현 필요
+    //todo soft delete 구현 필요(filter 적용해야됨)
     //게시글 삭제(D)
     @DeleteMapping("/posts/{id}")
     public ResponseEntity<Void> deleteById(
@@ -80,7 +81,7 @@ public class PostController {
     }
 
     //post page API
-    @GetMapping("/posts/page")
+    @GetMapping("/posts")
     public ResponseEntity<Page<PostPageResponseDto>> findAllPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size

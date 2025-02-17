@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.logging.log4j.util.Lazy;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +17,7 @@ public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //Usre class N:1 연관관계 매핑
+    //User class N:1 연관관계 매핑
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id")
 //    private User user;
@@ -27,7 +26,6 @@ public class Post extends BaseEntity {
     @Column(name = "contents")
     private String contents;
     @Column(name = "deleted_at")
-    @Setter
     private LocalDateTime deletedAt;
 
 
