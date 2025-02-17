@@ -69,7 +69,7 @@ public class CommentService {
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getUser().getId(),
-                comment.getPosts().getId(),
+                comment.getPost().getId(),
                 comment.getContent(),
                 comment.getCreatedAt(),
                 comment.getUpdatedAt());
@@ -90,6 +90,7 @@ public class CommentService {
         }
 
         comment.update(dto.getContent());
+
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getUser().getId(),
