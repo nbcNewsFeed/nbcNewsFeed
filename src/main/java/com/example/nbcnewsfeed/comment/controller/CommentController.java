@@ -16,7 +16,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/posts/{postId}/comments")
+    @PostMapping("/comments/{postId}")
     public ResponseEntity<CommentResponseDto> save(
             @SessionAttribute(name = "LOGIN_USER") Long userId,
             @PathVariable Long postId,
@@ -25,19 +25,21 @@ public class CommentController {
         return ResponseEntity.ok(commentService.save(userId, postId, dto));
     }
 
-    @GetMapping("/posts/{postId}/comments")
+    @GetMapping("/comments/{postId}")
     public ResponseEntity<List<CommentResponseDto>> findByPost(
             @PathVariable Long postId
     ) {
         return ResponseEntity.ok(commentService.findByPost(postId));
     }
 
-    @GetMapping("/comments/{id}")
-    public ResponseEntity<CommentResponseDto> findOne(@PathVariable Long id) {
+    @GetMapping("/comments/{postId}/{commentId}")
+    public ResponseEntity<CommentResponseDto> findOne(
+            @PathVariable Long id
+    ) {
         return ResponseEntity.ok(commentService.findOne(id));
     }
 
-    @PutMapping("/comments/{id}")
+    @PutMapping("/comments/{postId}/{commentsId}")
     public ResponseEntity<CommentResponseDto> update(
             @SessionAttribute(name = "LOGIN_USER") Long userId,
             @PathVariable Long id,
@@ -46,7 +48,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.update(id, userId, dto));
     }
 
-    @DeleteMapping("/comments/{id}")
+    @DeleteMapping("/comments/{postId}/{commentId}")
     public ResponseEntity<Void> delete(
             @SessionAttribute(name = "LOGIN_USER") Long userId,
             @PathVariable Long id
