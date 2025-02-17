@@ -81,10 +81,11 @@ public class PostController {
 
     //post page API
     @GetMapping("/posts/page")
-    public Page<PostPageResponseDto> findAllPage(
+    public ResponseEntity<Page<PostPageResponseDto>> findAllPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        postService.findAllPage(page, size);
+        Page<PostPageResponseDto> result = postService.findAllPage(page, size);
+        return ResponseEntity.ok(result);
     }
 }
