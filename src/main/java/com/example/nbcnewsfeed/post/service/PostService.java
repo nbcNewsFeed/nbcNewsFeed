@@ -2,18 +2,23 @@ package com.example.nbcnewsfeed.post.service;
 
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
+import com.example.nbcnewsfeed.post.dto.response.PostPageResponseDto;
 import com.example.nbcnewsfeed.post.dto.response.PostResponseDto;
 import com.example.nbcnewsfeed.post.dto.response.PostSaveResponseDto;
 import com.example.nbcnewsfeed.post.dto.response.PostUpdateResponseDto;
 import com.example.nbcnewsfeed.post.entity.Post;
 import com.example.nbcnewsfeed.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -112,5 +117,34 @@ public class PostService {
 //            throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
 //        }
         postRepository.deleteById(postId);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostPageResponseDto> findAllPage(int page, int size) {
+        // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
+        int adjustedPage = (page > 0) ? page -1 : 0;
+        // pageable 객체 생성, 수정일 기준 내림차순 정렬
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+        // Post Page 조회
+        Page<Post> postPage = postRepository.findAll(pageable);
+        // Post ID 리스트 추출
+        List<Long> postIds = postPage.stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+        // CommentCountDto 클래스, countByPostIds 메서드 필요
+        // 별도 쿼리로 댓글 수 조회
+        List<CommentCountDto> countResults = commentRepository.countByPostIds(postIds);
+        Map<Long, Long> commentCountMap = countResults.stream()
+                .collect(Collectors.toMap(CommentCountDto::getPostId, CommentCountDto::getCount));
+        // 각 Post를 PostPageResponseDto로 변환 (댓글 수는 Long을 int로 변환)
+        return postPage.map(post -> new PostPageResponseDto(
+                post.getId(),
+//                post.getUserId(),
+                post.getImageUrl(),
+                post.getContents(),
+                commentCountMap.getOrDefault(post.getId(), 0L).intValue(),
+                post.getCreatedAt(),
+                post.getModifiedAt()
+        ));
     }
 }
