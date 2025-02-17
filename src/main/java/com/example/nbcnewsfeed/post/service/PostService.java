@@ -13,10 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -102,7 +104,6 @@ public class PostService {
         );
     }
 
-    //soft delete 구현 필요
     @Transactional
     public void deleteById(
             Long postId
@@ -116,7 +117,18 @@ public class PostService {
 //        if(!userId.equals(post.getUser().getId())) {
 //            throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
 //        }
-        postRepository.deleteById(postId);
+        post.setDeletedAt(LocalDateTime.now());
+    }
+
+    // 2주가 지난 사용자 물리 삭제
+    @Transactional
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deletePosts() {
+        LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
+        List<Post> postToDelete = postRepository.findAllByDeletedAtBefore(twoWeeksAgo);
+        if (!postToDelete.isEmpty()) {
+            postRepository.deleteAll(postToDelete);
+        }
     }
 
     @Transactional(readOnly = true)

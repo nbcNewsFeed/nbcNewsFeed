@@ -5,11 +5,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.logging.log4j.util.Lazy;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(name = "posts")
 public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,8 +22,14 @@ public class Post extends BaseEntity {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id")
 //    private User user;
+    @Column(name = "image_url")
     private String imageUrl;
+    @Column(name = "contents")
     private String contents;
+    @Column(name = "deleted_at")
+    @Setter
+    private LocalDateTime deletedAt;
+
 
     public Post(
 //            User user,
