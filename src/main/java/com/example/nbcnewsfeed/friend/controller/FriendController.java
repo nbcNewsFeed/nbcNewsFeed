@@ -1,8 +1,8 @@
 package com.example.nbcnewsfeed.friend.controller;
 
 import com.example.nbcnewsfeed.friend.dto.CreateFriendRequestDto;
+import com.example.nbcnewsfeed.friend.dto.UpdateFriendRequestDto;
 import com.example.nbcnewsfeed.friend.service.FriendService;
-import com.example.nbcnewsfeed.user.UserClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +25,23 @@ public class FriendController {
 //        Long senderId = extractUserIdFromToken(token);
 
         if (requestDto.getSenderId().equals(requestDto.getReceiverId())){ //JWT 로그인 구현 이후에 변경
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신에게는 친구 요청이 불가능합니다. ");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "senderId와 receiverId가 일치할 수 없습니다. (자기 자신에게 친구요청 불가능) ");
         }
 
         friendService.sendFriendRequest(requestDto);
 
         return new ResponseEntity<>("친구 요청이 전송되었습니다.", HttpStatus.OK);
 
+    }
+
+    @PatchMapping
+    public ResponseEntity<String> updateFriendRequest (
+            @RequestBody UpdateFriendRequestDto requestDto
+    ) {
+        if (requestDto.getSenderId().equals(requestDto.getReceiverId())){ //JWT 로그인 구현 이후에 변경
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "senderId와 receiverId가 일치할 수 없습니다. ");
+        }
+
+        return new ResponseEntity<>(friendService.updateFriendRequest(requestDto), HttpStatus.OK);
     }
 }

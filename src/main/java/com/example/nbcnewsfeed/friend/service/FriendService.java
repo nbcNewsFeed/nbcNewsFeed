@@ -1,8 +1,10 @@
 package com.example.nbcnewsfeed.friend.service;
 
 import com.example.nbcnewsfeed.friend.dto.CreateFriendRequestDto;
+import com.example.nbcnewsfeed.friend.dto.UpdateFriendRequestDto;
 import com.example.nbcnewsfeed.friend.entity.FriendRequest;
 import com.example.nbcnewsfeed.friend.entity.FriendStatus;
+import com.example.nbcnewsfeed.friend.entity.Friendship;
 import com.example.nbcnewsfeed.friend.repository.FriendRequestRepository;
 import com.example.nbcnewsfeed.friend.repository.FriendshipRepository;
 import com.example.nbcnewsfeed.user.User;
@@ -16,8 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
 public class FriendService {
-    private final FriendRequestRepository friendRepository;
-    private final UserClient userClient;
+    private final UserClient userService;
     private final FriendRequestRepository friendRequestRepository;
     private final FriendshipRepository friendshipRepository;
 
@@ -25,8 +26,8 @@ public class FriendService {
     public void sendFriendRequest(CreateFriendRequestDto requestDto) {
 
         // 받는 사람과 보내는 사람이 실제로 존재하는지 확인
-        User senderUser = userClient.findUserById(requestDto.getSenderId());
-        User receiverUser = userClient.findUserById(requestDto.getReceiverId());
+        User senderUser = userService.findUserById(requestDto.getSenderId());
+        User receiverUser = userService.findUserById(requestDto.getReceiverId());
 
         Long senderId = senderUser.getId();
         Long receiverId = receiverUser.getId();
@@ -49,5 +50,38 @@ public class FriendService {
         friendRequestRepository.save(friendRequest);
     }
 
+    @Transactional
+    public String updateFriendRequest(UpdateFriendRequestDto requestDto) {
 
+        User senderUser = userService.findUserById(requestDto.getSenderId());
+        User receiverUser = userService.findUserById(requestDto.getReceiverId());
+
+        Long senderId = senderUser.getId();
+        Long receiverId = receiverUser.getId();
+
+        if(friendshipRepository.existsFriendshipByUser1IdAndUser2Id(senderId, receiverId)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 상태입니다.");
+        }
+
+        if(!friendRequestRepository.existsFriendRequestBySenderIdAndReceiverIdAndFriendStatus(senderId, receiverId, FriendStatus.WAITING)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 사용자에게 친구 요청을 받지 않았습니다.");
+        }
+
+        FriendRequest findFriendRequest = friendRequestRepository.findFriendRequestBySenderIdAndReceiverIdAndFriendStatus(senderId, receiverId, FriendStatus.WAITING);
+
+        if(requestDto.getIsAcceptOrReject()){
+            findFriendRequest.updateFriendStatus(FriendStatus.ACCEPTED);
+            Friendship friendship1 = new Friendship(senderUser, receiverUser);
+            Friendship friendship2 = new Friendship(receiverUser, senderUser);
+            friendshipRepository.save(friendship1);
+            friendshipRepository.save(friendship2);
+
+            return "친구 수락 성공!";
+
+        } else {
+            findFriendRequest.updateFriendStatus(FriendStatus.REJECTED);
+            return "친구 거절 성공";
+        }
+
+    }
 }
