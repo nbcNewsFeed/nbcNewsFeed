@@ -1,9 +1,6 @@
 package com.example.nbcnewsfeed.user.controller;
 
-import com.example.nbcnewsfeed.user.dto.DeleteUserRequestDto;
-import com.example.nbcnewsfeed.user.dto.PasswordChangeDto;
-import com.example.nbcnewsfeed.user.dto.UserResponseDto;
-import com.example.nbcnewsfeed.user.dto.UserSignupDto;
+import com.example.nbcnewsfeed.user.dto.*;
 import com.example.nbcnewsfeed.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -51,21 +48,18 @@ public class UserController {
     // 프로필 사진, 닉네임, 한 줄 소개
     @PatchMapping("/me")
     public ResponseEntity<UserResponseDto> updateUser(
-            @RequestParam String inputPassword,
-            @Valid @RequestParam(required = false) String newProfileImageUrl,
-            @Valid @RequestParam(required = false) String newNickname,
-            @Valid @RequestParam(required = false) String newStatusMessage,
+            @RequestBody ChangeUserDto changeUserDto,
             HttpServletRequest request
     ) {
         Long currentUserId = getCurrentUserId(request);
-        UserResponseDto userResponseDto = userService.updateUser(currentUserId, inputPassword, newProfileImageUrl, newNickname, newStatusMessage);
+        UserResponseDto userResponseDto = userService.updateUser(currentUserId, changeUserDto.getInputPassword(), changeUserDto.getNewProfileImageUrl(), changeUserDto.getNewNickname(), changeUserDto.getNewStatusMessage());
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     // 사용자 수정 -> 비밀번호
     @PatchMapping("me/password")
     public ResponseEntity<UserResponseDto> updatePasswordUser(
-            @Valid @RequestBody PasswordChangeDto userPasswordDto,
+            @Valid @RequestBody ChangePasswordDto userPasswordDto,
             HttpServletRequest request
     ) {
         Long currentUserId = getCurrentUserId(request);
