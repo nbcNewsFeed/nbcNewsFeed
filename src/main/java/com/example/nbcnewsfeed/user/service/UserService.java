@@ -6,10 +6,12 @@ import com.example.nbcnewsfeed.user.exception.CustomException;
 import com.example.nbcnewsfeed.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -54,13 +56,32 @@ public class UserService {
     // 사용자 수정
     // 비밀번호
     @Transactional
-    public UserResponseDto updatedPasswordUser(Long currentUserId, String inputPassword, String newPassword) {
+    public UserResponseDto updatePasswordUser(Long currentUserId, String inputPassword, String newPassword) {
         User user = userRepository.findByIdElseOrThrow(currentUserId);
         validPassword(inputPassword, user.getPassword());
-        if(sanitizeString(newPassword) != null){
+        if (sanitizeString(newPassword) != null) {
             user.setPassword(newPassword);
         }
         return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
+    }
+
+    // 사용자 삭제 요청
+    @Transactional
+    public void deleteUser(Long currentUserId, String inputPassword) {
+        User user = userRepository.findByIdElseOrThrow(currentUserId);
+        validPassword(inputPassword, user.getPassword());
+        user.setDeletedAt(LocalDateTime.now());
+    }
+
+    // 2주가 지난 사용자 물리 삭제
+    @Transactional
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deleteUsers() {
+        LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
+        List<User> userToDelete = userRepository.findAllByDeletedAtBefore(twoWeeksAgo);
+        if (!userToDelete.isEmpty()) {
+            userRepository.deleteAll(userToDelete);
+        }
     }
 
     // 중복 이메일 체크

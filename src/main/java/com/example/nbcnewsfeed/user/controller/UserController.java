@@ -1,5 +1,6 @@
 package com.example.nbcnewsfeed.user.controller;
 
+import com.example.nbcnewsfeed.user.dto.DeleteUserRequestDto;
 import com.example.nbcnewsfeed.user.dto.PasswordChangeDto;
 import com.example.nbcnewsfeed.user.dto.UserResponseDto;
 import com.example.nbcnewsfeed.user.dto.UserSignupDto;
@@ -51,9 +52,9 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<UserResponseDto> updateUser(
             @RequestParam String inputPassword,
-            @RequestParam(required = false) String newProfileImageUrl,
-            @RequestParam(required = false) String newNickname,
-            @RequestParam(required = false) String newStatusMessage,
+            @Valid @RequestParam(required = false) String newProfileImageUrl,
+            @Valid @RequestParam(required = false) String newNickname,
+            @Valid @RequestParam(required = false) String newStatusMessage,
             HttpServletRequest request
     ) {
         Long currentUserId = getCurrentUserId(request);
@@ -61,16 +62,26 @@ public class UserController {
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
-    // 사용자 수정
-    // 비밀번호
+    // 사용자 수정 -> 비밀번호
     @PatchMapping("me/password")
-    public ResponseEntity<UserResponseDto> updatedPasswordUser(
-            @RequestBody PasswordChangeDto userPasswordDto,
+    public ResponseEntity<UserResponseDto> updatePasswordUser(
+            @Valid @RequestBody PasswordChangeDto userPasswordDto,
             HttpServletRequest request
     ) {
         Long currentUserId = getCurrentUserId(request);
-        UserResponseDto userResponseDto = userService.updatedPasswordUser(currentUserId, userPasswordDto.getCurrentPassword(), userPasswordDto.getNewPassword());
+        UserResponseDto userResponseDto = userService.updatePasswordUser(currentUserId, userPasswordDto.getCurrentPassword(), userPasswordDto.getNewPassword());
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+    }
+
+    // 사용자 삭제
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUser(
+            @RequestBody DeleteUserRequestDto deleteUserRequestDto,
+            HttpServletRequest request) {
+        Long currentUserId = getCurrentUserId(request);
+        userService.deleteUser(currentUserId, deleteUserRequestDto.getInputPassword());
+        request.getSession(false).invalidate();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 세션 검증 로직
