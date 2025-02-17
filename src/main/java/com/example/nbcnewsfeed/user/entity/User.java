@@ -3,16 +3,13 @@ package com.example.nbcnewsfeed.user.entity;
 import com.example.nbcnewsfeed.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
-
 import java.time.LocalDateTime;
 
 
 @Entity
 @Getter
-@Setter
 @Table(name = "user")
 @Filter(name = "activeUserFilter", condition = "deleted_at is null")
 @FilterDef(name = "activeUserFilter")
@@ -66,4 +63,11 @@ public class User extends BaseEntity {
         this.nickname = newNickname;
     }
 
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    public void changeDeletedAt(LocalDateTime newDateTime) {
+        this.deletedAt = newDateTime;
+    }
 }

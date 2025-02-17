@@ -69,7 +69,7 @@ public class UserService {
         User user = userRepository.findByIdOrElseThrow(currentUserId);
         validPassword(requestDto.getInputPassword(), user.getPassword());
         if (sanitizeString(requestDto.getNewPassword()) != null) {
-            user.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
+            user.changePassword(passwordEncoder.encode(requestDto.getNewPassword()));
         }
         return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
     }
@@ -79,7 +79,7 @@ public class UserService {
     public void deleteUser(Long currentUserId, DeleteUserRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrow(currentUserId);
         validPassword(requestDto.getInputPassword(), user.getPassword());
-        user.setDeletedAt(LocalDateTime.now());
+        user.changeDeletedAt(LocalDateTime.now());
     }
 
     // 삭제된 사용자 복구
@@ -87,7 +87,7 @@ public class UserService {
     public UserResponseDto restoreUser(RestoreUserDto requestDto) {
         User user = userRepository.findByEmailOrElseThrow(requestDto.getEmail());
         validPassword(requestDto.getPassword(), user.getPassword());
-        user.setDeletedAt(null);
+        user.changeDeletedAt(null);
         return new UserResponseDto(user.getNickname(), user.getStatusMessage(), user.getProfileImageUrl());
     }
 
@@ -120,5 +120,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
     }
+
+
 
 }
