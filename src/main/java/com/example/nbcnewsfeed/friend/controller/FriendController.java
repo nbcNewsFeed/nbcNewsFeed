@@ -1,6 +1,7 @@
 package com.example.nbcnewsfeed.friend.controller;
 
 import com.example.nbcnewsfeed.friend.dto.CreateFriendRequestDto;
+import com.example.nbcnewsfeed.friend.dto.DeleteFriendshipDto;
 import com.example.nbcnewsfeed.friend.dto.FriendshipListDto;
 import com.example.nbcnewsfeed.friend.dto.UpdateFriendRequestDto;
 import com.example.nbcnewsfeed.friend.service.FriendService;
@@ -52,5 +53,11 @@ public class FriendController {
     public ResponseEntity<List<FriendshipListDto>> getFriendshipList (@PathVariable Long userId){
         List<FriendshipListDto> frinendshipList = friendService.getFrinendshipList(userId);
         return new ResponseEntity<>(frinendshipList, HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteFriend (@RequestBody DeleteFriendshipDto requestDto){
+        friendService.deleteFriend(requestDto);
+        return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
     }
 }

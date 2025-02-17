@@ -1,6 +1,7 @@
 package com.example.nbcnewsfeed.friend.service;
 
 import com.example.nbcnewsfeed.friend.dto.CreateFriendRequestDto;
+import com.example.nbcnewsfeed.friend.dto.DeleteFriendshipDto;
 import com.example.nbcnewsfeed.friend.dto.FriendshipListDto;
 import com.example.nbcnewsfeed.friend.dto.UpdateFriendRequestDto;
 import com.example.nbcnewsfeed.friend.entity.FriendRequest;
@@ -98,4 +99,15 @@ public class FriendService {
         return friendshipList.stream().map(FriendshipListDto::toDto).collect(Collectors.toList());
     }
 
+    public void deleteFriend(DeleteFriendshipDto requestDto) {
+        User user1 = userService.findUserById(requestDto.getUser1Id());
+        User user2 = userService.findUserById(requestDto.getUser2Id());
+
+        Friendship friendship1 = friendshipRepository.findFriendshipsByUser1AndUser2(user1, user2);
+        Friendship friendship2 = friendshipRepository.findFriendshipsByUser1AndUser2(user2, user1);
+
+        friendshipRepository.delete(friendship1);
+        friendshipRepository.delete(friendship2);
+
+    }
 }
