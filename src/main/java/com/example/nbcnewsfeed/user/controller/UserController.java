@@ -52,7 +52,7 @@ public class UserController {
     @PatchMapping("/me")
     @Operation(summary = "사용자 수정", description = "로그인한 사용자의 닉네임, 프로필 사진, 소개를 수정합니다.")
     public ResponseEntity<UserResponseDto> updateUser(
-            @RequestBody ChangeUserDto requestDto,
+            @Valid @RequestBody ChangeUserDto requestDto,
             HttpServletRequest request
     ) {
         Long currentUserId = getCurrentUserId(request);
