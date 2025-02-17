@@ -7,8 +7,10 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "friend")
-public class Friend extends BaseEntity {
+@Table(name = "friend_request")
+public class FriendRequest extends BaseEntity {
+
+    //친구 요청 대기 테이블
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,13 +26,13 @@ public class Friend extends BaseEntity {
     private FriendStatus friendStatus;
 
 
-    public Friend(User sender, User receiver, FriendStatus friendStatus) {
+    public FriendRequest(User sender, User receiver, FriendStatus friendStatus) {
         this.sender = sender;
         this.receiver = receiver;
         this.friendStatus = friendStatus;
     }
 
-    public Friend() {
+    public FriendRequest() {
 
     }
 }
