@@ -21,13 +21,13 @@ public class Friend extends BaseEntity {
     private User receiver;
 
     @Enumerated(EnumType.STRING) @Column(nullable = false)
-    private FriendStatus status;
+    private FriendStatus friendStatus;
 
 
-    public Friend(User sender, User receiver, FriendStatus status) {
+    public Friend(User sender, User receiver, FriendStatus friendStatus) {
         this.sender = sender;
         this.receiver = receiver;
-        this.status = status;
+        this.friendStatus = friendStatus;
     }
 
     public Friend() {

@@ -20,16 +20,17 @@ public class FriendService {
     @Transactional
     public void sendFriendRequest(Long senderId, Long receiverId) {
 
+        // 받는 사람과 보내는 사람이 실제로 존재하는지 확인
         User senderUser = userClient.findUserById(senderId);
         User receiverUser = userClient.findUserById(receiverId);
 
         // 이미 친구 상태인지 확인하는 로직
-        if (friendRepository.existsBySenderIdAndReceiverIdAndStatus(senderId, receiverId, FriendStatus.ACCEPTED)){
+        if (friendRepository.existsBySenderIdAndReceiverIdAndFriendStatus(senderId, receiverId, FriendStatus.ACCEPTED)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 상태입니다.");
         }
 
         // 요청 대기 상태인지 확인하는 로직
-        if (friendRepository.existsBySenderIdAndReceiverIdAndStatus(senderId, receiverId, FriendStatus.WAITING)){
+        if (friendRepository.existsBySenderIdAndReceiverIdAndFriendStatus(senderId, receiverId, FriendStatus.WAITING)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "친구 요청 대기 상태입니다.");
         }
 

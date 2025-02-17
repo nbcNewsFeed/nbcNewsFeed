@@ -12,7 +12,8 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 
 //    boolean existsBySenderIdAndReceiverIdAndStatus(Long senderId, Long receiverId, FriendStatus friendStatus);
 
-    @Query("SELECT COUNT(f) > 0 FROM Friend f WHERE (f.sender.id = :senderId AND f.receiver.id = :receiverId OR f.sender.id = :receiverId AND f.receiver.id = :senderId) AND f.status = :status")
-    boolean existsBySenderIdAndReceiverIdAndStatus(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId, @Param("status") FriendStatus status);
+    //friend 테이블에 존재하는지 확인하는 로직 (양방향으로)
+    @Query("SELECT COUNT(f) > 0 FROM Friend f WHERE (f.sender.id = :senderId AND f.receiver.id = :receiverId OR f.sender.id = :receiverId AND f.receiver.id = :senderId) AND f.friendStatus = :friendStatus")
+    boolean existsBySenderIdAndReceiverIdAndFriendStatus(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId, @Param("friendStatus") FriendStatus friendStatus);
 
 }

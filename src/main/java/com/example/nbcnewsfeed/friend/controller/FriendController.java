@@ -14,12 +14,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class FriendController {
 
     private final FriendService friendService;
-    private final UserClient userService;
 
+    // 친구 요청 전송 컨트롤러
     @PostMapping("/{receiverId}")
     public ResponseEntity<String> sendFriendRequest (
             @PathVariable Long receiverId,
-            @RequestParam Long senderId){ //JWT구현 이후에는 @RequestHeader("Authorization") String token 으로 변경
+            @RequestParam Long senderId){ //JWT 로그인 구현 이후에는 @RequestHeader("Authorization") String token 으로 변경
 
         //JWT에서 사용자 Id 추출
 //        Long senderId = extractUserIdFromToken(token);
@@ -28,7 +28,7 @@ public class FriendController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "senderId is null");
         }
 
-        if (senderId == receiverId){
+        if (senderId.equals(receiverId)){ //JWT 로그인 구현 이후에 변경
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신에게는 친구 요청이 불가능합니다. ");
         }
 
