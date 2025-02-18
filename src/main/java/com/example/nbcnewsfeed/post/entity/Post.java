@@ -24,7 +24,7 @@ public class Post extends BaseEntity {
 
 //  User class N:1 연관관계 매핑
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
     @Column(name = "image_url")
     private String imageUrl;

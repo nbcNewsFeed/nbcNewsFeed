@@ -154,7 +154,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto restore(Long postId) {
+    public PostResponseDto restore(Long postId, Long userId) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -166,11 +166,11 @@ public class PostService {
         post.createDeletedAt(null);
         return new PostResponseDto(
                 post.getId(),
-//                        post.getUser().getId(),
+                post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
-        )
+        );
     }
 }
