@@ -1,14 +1,12 @@
 package com.example.nbcnewsfeed.user.service;
 
 import com.example.nbcnewsfeed.common.config.PasswordEncoder;
+import com.example.nbcnewsfeed.common.filter.DeletedAtFilter;
 import com.example.nbcnewsfeed.user.dto.*;
 import com.example.nbcnewsfeed.user.entity.User;
 import com.example.nbcnewsfeed.common.exception.CustomException;
 import com.example.nbcnewsfeed.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,9 +22,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final DeletedAtFilter deletedAtFilter;
 
     // signup -> 회원가입
     public UserResponseDto signup(UserSignupDto requestDto) {
@@ -44,8 +40,9 @@ public class UserService {
 
     // 아이디, 닉네임으로 사용자 조회 (단건 + 다건)
     public List<UserResponseDto> findUsers(Long id, String nickname) {
-        Session session = entityManager.unwrap(Session.class);
-        session.enableFilter("activeUserFilter");
+
+        //deleted_at 필터 활성 메서드
+        deletedAtFilter.enableSoftDeleteFilter();
 
         List<User> userList = userRepository.findUsers(id, sanitizeString(nickname));
         if (userList.isEmpty()) {

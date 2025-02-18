@@ -3,7 +3,6 @@ package com.example.nbcnewsfeed.post.entity;
 import com.example.nbcnewsfeed.common.entity.BaseEntity;
 import com.example.nbcnewsfeed.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Filter;
@@ -32,18 +31,18 @@ public class Post extends BaseEntity {
     private String contents;
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-    private Long numOfCount;
+    private Long numOfComments;
 
     public Post(
             User user,
             String imageUrl,
             String contents,
-            Long numOfComment
+            Long numOfComments
     ) {
         this.user = user;
         this.imageUrl = imageUrl;
         this.contents = contents;
-        this.numOfCount = numOfComment;
+        this.numOfComments = numOfComments;
     }
 
     public void update(
@@ -57,7 +56,7 @@ public class Post extends BaseEntity {
         this.deletedAt = now;
     }
 
-    public void updateNumofComment(long numOfComment) {
-        this.numOfCount = numOfComment;
+    public void updateNumOfComments(long numOfComments) {
+        this.numOfComments = numOfComments;
     }
 }

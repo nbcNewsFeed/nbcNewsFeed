@@ -38,7 +38,7 @@ public class CommentService {
         Comment comment = new Comment(post, user, dto.getContent());
 
         commentRepository.save(comment);
-        post.updateNumofComment(post.getNumOfCount() + 1);
+        post.updateNumOfComments(post.getNumOfComments() + 1);
 
         return new CommentResponseDto(
                 comment.getId(),

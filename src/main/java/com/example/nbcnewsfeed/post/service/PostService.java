@@ -1,5 +1,6 @@
 package com.example.nbcnewsfeed.post.service;
 
+import com.example.nbcnewsfeed.common.filter.DeletedAtFilter;
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
 import com.example.nbcnewsfeed.post.dto.response.PostPageResponseDto;
@@ -10,10 +11,7 @@ import com.example.nbcnewsfeed.post.entity.Post;
 import com.example.nbcnewsfeed.post.repository.PostRepository;
 import com.example.nbcnewsfeed.user.entity.User;
 import com.example.nbcnewsfeed.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,9 +30,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    //deleted_at Filter 활성화를 위한 entityManager 객체 생성
-    @PersistenceContext
-    private final EntityManager entityManager;
+    private final DeletedAtFilter deletedAtFilter;
 
     @Transactional
     public PostSaveResponseDto save(Long userId, PostSaveRequestDto requestDto) {
@@ -53,7 +49,7 @@ public class PostService {
                 user.getId(),
                 post.getImageUrl(),
                 post.getContents(),
-                post.getNumOfCount(),
+                post.getNumOfComments(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -64,7 +60,7 @@ public class PostService {
     public Page<PostPageResponseDto> findAllPage(int page, int size) {
 
         //deleted_at 필터 활성 메서드
-        enableSoftDeleteFilter();
+        deletedAtFilter.enableSoftDeleteFilter();
 
         // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
         int adjustedPage = (page > 0) ? page - 1 : 0;
@@ -78,7 +74,7 @@ public class PostService {
                         post.getUser().getId(),
                         post.getImageUrl(),
                         post.getContents(),
-                        post.getNumOfCount(),
+                        post.getNumOfComments(),
                         post.getCreatedAt(),
                         post.getModifiedAt()
                 )
@@ -89,18 +85,16 @@ public class PostService {
     public PostResponseDto findById(Long id) {
 
         //deleted_at 필터 활성 메서드
-        enableSoftDeleteFilter();
+        deletedAtFilter.enableSoftDeleteFilter();
 
-        //post null 검증
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
-        );
+        Post post = postRepository.findByIdWithFilterOrElseThrow(id);
+
         return new PostResponseDto(
                 post.getId(),
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
-                post.getNumOfCount(),
+                post.getNumOfComments(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -125,7 +119,7 @@ public class PostService {
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
-                post.getNumOfCount(),
+                post.getNumOfComments(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -177,23 +171,9 @@ public class PostService {
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
-                post.getNumOfCount(),
+                post.getNumOfComments(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
-    }
-
-    //deleted_at Filter 활성 메서드
-    @Transactional
-    public void enableSoftDeleteFilter() {
-        Session session = entityManager.unwrap(Session.class);
-        session.enableFilter("activePostFilter");
-    }
-
-    //deleted_at Filter 비활성 메서드
-    @Transactional
-    public void disableSoftDeleteFilter() {
-        Session session = entityManager.unwrap(Session.class);
-        session.disableFilter("activePostFilter");
     }
 }
