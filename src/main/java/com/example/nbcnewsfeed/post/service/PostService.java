@@ -8,6 +8,8 @@ import com.example.nbcnewsfeed.post.dto.response.PostSaveResponseDto;
 import com.example.nbcnewsfeed.post.dto.response.PostUpdateResponseDto;
 import com.example.nbcnewsfeed.post.entity.Post;
 import com.example.nbcnewsfeed.post.repository.PostRepository;
+import com.example.nbcnewsfeed.user.entity.User;
+import com.example.nbcnewsfeed.user.repository.UserRepository;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,21 +31,23 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-//    private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public PostSaveResponseDto save(
-//            Long userId,
+            Long userId,
             PostSaveRequestDto requestDto) {
-//        User user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
         Post post = new Post(
-//                user,
+                user,
                 requestDto.getImageUrl(),
                 requestDto.getContents());
         postRepository.save(post);
         return new PostSaveResponseDto(
                 post.getId(),
-//                user.getUserId(),
+                user.getId(),
                 post.getImageUrl(),
                 post.getContents(),
                 post.getCreatedAt(),
@@ -73,7 +77,7 @@ public class PostService {
         // 각 Post를 PostPageResponseDto로 변환 (댓글 수는 Long을 int로 변환)
         return postPage.map(post -> new PostPageResponseDto(
                 post.getId(),
-//                post.getUserId(),
+                post.getId(),
                 post.getImageUrl(),
                 post.getContents(),
                 commentCountMap.getOrDefault(post.getId(), 0L).intValue(),
@@ -90,7 +94,7 @@ public class PostService {
         );
         return new PostResponseDto(
                 post.getId(),
-//                        post.getUser().getId(),
+                post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
                 post.getCreatedAt(),
@@ -101,20 +105,20 @@ public class PostService {
     @Transactional
     public PostUpdateResponseDto update(
             Long postId,
-//            Long userId,
+            Long userId,
             PostUpdateRequestDto requestDto) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
-        //post 작성자가 맞는지 검증
-//        if(!userId.equals(post.getUser().getId())) {
-//            throw new IllegalArgumentException("작성자 본인만 수정할 수 있습니다.");
-//        }
+//      post 작성자가 맞는지 검증
+        if(!userId.equals(post.getUser().getId())) {
+            throw new IllegalArgumentException("작성자 본인만 수정할 수 있습니다.");
+        }
         post.update(requestDto.getImageUrl(), requestDto.getContents());
         return new PostUpdateResponseDto(
                 post.getId(),
-//                        post.getUser().getId(),
+                post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
                 post.getCreatedAt(),
@@ -124,17 +128,17 @@ public class PostService {
 
     @Transactional
     public void deleteById(
-            Long postId
-//            , Long userId
+            Long postId,
+            Long userId
     ) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         //post 작성자가 맞는지 검증
-//        if(!userId.equals(post.getUser().getId())) {
-//            throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
-//        }
+        if(!userId.equals(post.getUser().getId())) {
+            throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
+        }
         post.createDeletedAt(LocalDateTime.now());
     }
 
@@ -156,9 +160,9 @@ public class PostService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         //post 작성자가 맞는지 검증
-//        if(!userId.equals(post.getUser().getId())) {
-//            throw new IllegalArgumentException("작성자 본인만 게시글을 복구할 수 있습니다.");
-//        }
+        if(!userId.equals(post.getUser().getId())) {
+            throw new IllegalArgumentException("작성자 본인만 게시글을 복구할 수 있습니다.");
+        }
         post.createDeletedAt(null);
         return new PostResponseDto(
                 post.getId(),
