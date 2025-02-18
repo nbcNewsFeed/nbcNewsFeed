@@ -131,4 +131,3 @@ public class FriendService {
         } else throw new IllegalStateException("해당 아이디는 삭제할 친구가 없습니다.");
     }
 }
-

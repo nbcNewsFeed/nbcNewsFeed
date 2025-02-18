@@ -1,5 +1,6 @@
 package com.example.nbcnewsfeed.post.entity;
 
+import com.example.nbcnewsfeed.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

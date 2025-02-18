@@ -167,6 +167,6 @@ public class PostService {
                 post.getContents(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
-        )
+        );
     }
 }
