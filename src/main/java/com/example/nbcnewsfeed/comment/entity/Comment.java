@@ -1,5 +1,8 @@
 package com.example.nbcnewsfeed.comment.entity;
 
+import com.example.nbcnewsfeed.common.entity.BaseEntity;
+import com.example.nbcnewsfeed.post.entity.Post;
+import com.example.nbcnewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

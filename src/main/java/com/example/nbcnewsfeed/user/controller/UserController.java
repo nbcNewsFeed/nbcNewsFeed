@@ -49,6 +49,7 @@ public class UserController {
             @Valid @RequestBody ChangeUserDto requestDto,
             HttpServletRequest request
     ) {
+//        request.getAttribute();
         Long currentUserId = getCurrentUserId(request);
         UserResponseDto userResponseDto = userService.updateUser(currentUserId, requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
