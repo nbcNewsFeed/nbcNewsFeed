@@ -1,4 +1,4 @@
-package com.example.nbcnewsfeed.user.exception;
+package com.example.nbcnewsfeed.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
