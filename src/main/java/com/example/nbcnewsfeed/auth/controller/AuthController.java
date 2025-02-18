@@ -5,6 +5,10 @@ import com.example.nbcnewsfeed.auth.jwt.util.JwtUtil;
 import com.example.nbcnewsfeed.auth.service.AuthService;
 import com.example.nbcnewsfeed.common.config.PasswordEncoder;
 import com.example.nbcnewsfeed.user.entity.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -62,4 +67,33 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
+
+//    @PostMapping("/logout")
+//    public ResponseEntity<String> logout(@RequestHeader(value=JwtUtil.ACCESS_HEADER_STRING, required=false) String accessToken) {
+//
+//        if(accessToken == null) {
+//            throw new IllegalStateException();
+//        }
+//
+//        String actualToken = accessToken.replaceFirst("Bearer ", ""); // Bearer 제거
+//        Jws<Claims> claimsJws;
+//        try {
+//            // 토큰 읽어서 memberId 알아내기
+//            claimsJws = Jwts.parser()
+//                    .verifyWith(JwtUtil.getSigningKey())
+//                    .build()
+//                    .parseSignedClaims(actualToken);
+//        } catch(JwtException e) {
+//            throw new IllegalStateException();
+//        }
+//
+//        Long memberId = Long.parseLong(claimsJws.getPayload().getSubject());
+//
+//        jwtService.logout(memberId); // refresh, access token을 DB에서 지워주기
+//
+//        SuccessResult result = new Builder(DetailedStatus.OK)
+//                .message("로그아웃 되었습니다.")
+//                .build();
+//        return new ResponseEntity<>(result, HttpStatus.OK);
+//    }
 }
