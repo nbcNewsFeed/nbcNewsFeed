@@ -20,9 +20,6 @@ public class JwtFilter implements Filter {
 
     private final JwtUtil jwtUtil;
 
-    // authPattern : `/v{숫자}/auth`로 시작하는 URL 상수
-//   private final Pattern authPattern = Pattern.compile("^/v\\d+/auth.*");
-
     private static final String[] WHITE_LIST = {"/users/signup", "/login", "/swagger-ui/*"};
 
     @Override
@@ -57,10 +54,8 @@ public class JwtFilter implements Filter {
 
         try{
             Claims claims = jwtUtil.extractClaims(jwt);
-            log.info("ddddddddddddddd");
             log.info("doFilter claims={}",claims);
 
-            //todo 이 객체를 controller request로 받아오기 getAttribute
             httpRequest.setAttribute("userId",claims.getSubject());
             httpRequest.setAttribute("email",claims.get("email"));
             log.info("doFilter userId={}",claims.getSubject());

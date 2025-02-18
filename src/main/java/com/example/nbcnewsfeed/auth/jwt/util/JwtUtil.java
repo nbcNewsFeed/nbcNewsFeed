@@ -58,8 +58,7 @@ public class JwtUtil {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey) // 1. 서명을 검증할 키 설정(JWT 위,변조 여부 확인)
                 .build() // 2. JWT 파서 생성
-//                .parseClaimsJwt(token)// 3. 토큰 파싱 및 서명 검증
-                .parseClaimsJws(token)
+                .parseClaimsJws(token)// 3. 토큰 파싱 및 서명 검증
                 .getBody();// 4. 페이로드(Claims) 추출
     }
 
