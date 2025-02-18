@@ -45,7 +45,7 @@ public class CommentService {
                 post.getId(),
                 comment.getContent(),
                 comment.getCreatedAt(),
-                comment.getUpdatedAt()
+                comment.getModifiedAt()
         );
     }
 
@@ -60,7 +60,7 @@ public class CommentService {
                         comment.getPost().getId(),
                         comment.getContent(),
                         comment.getCreatedAt(),
-                        comment.getUpdatedAt()))
+                        comment.getModifiedAt()))
                 .collect(Collectors.toList());
     }
 
@@ -76,7 +76,7 @@ public class CommentService {
                 comment.getPost().getId(),
                 comment.getContent(),
                 comment.getCreatedAt(),
-                comment.getUpdatedAt());
+                comment.getModifiedAt());
     }
 
     // Update
@@ -101,9 +101,10 @@ public class CommentService {
                 comment.getPost().getId(),
                 comment.getContent(),
                 comment.getCreatedAt(),
-                comment.getUpdatedAt());
+                comment.getModifiedAt());
     }
 
+    // Delete
     @Transactional
     public void delete(Long commentId, Long userId) {
 

@@ -52,7 +52,7 @@ public class FriendService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "친구 요청 목록을 확인해주세요. (해당 사람에게 요청이 들어온 줄 모르고 요청을 보냈을때) ");
         }
 
-        FriendRequest friendRequest = new FriendRequest(senderUser, receiverUser, FriendStatus.WAITING);
+        FriendRequest friendRequest = new FriendRequest(senderUser, receiverUser);
 
         friendRequestRepository.save(friendRequest);
     }
@@ -125,8 +125,6 @@ public class FriendService {
     public void deleteAllFriendByUserId(Long userId){
         User user = userService.findUserById(userId);
         List<Friendship> friendshipsByUser = friendshipRepository.findFriendshipsByUser(user);
-
-        log.info("친구관계 :", friendshipsByUser.toString());
 
         if(friendshipsByUser != null){
             friendshipsByUser.forEach(Friendship::softDelete);
