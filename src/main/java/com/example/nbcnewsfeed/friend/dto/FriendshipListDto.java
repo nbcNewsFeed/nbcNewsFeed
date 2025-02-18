@@ -5,7 +5,7 @@ import lombok.Getter;
 
 
 @Getter
-public class FriendshipListDto {
+public class FriendshipListDto { //현재 친구관계 목록 반환 dto
 
     private final Long user1Id;
     private final Long user2Id;
