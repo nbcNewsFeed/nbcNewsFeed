@@ -10,4 +10,6 @@ public class PostUpdateRequestDto {
     private String imageUrl;
     @NotBlank(message = "내용을 입력해 주세요.")
     private String contents;
+    //jwt 구현 후 삭제 예정
+    private Long userId;
 }

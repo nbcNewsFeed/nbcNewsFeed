@@ -1,5 +1,7 @@
 package com.example.nbcnewsfeed.post.controller;
 
+import com.example.nbcnewsfeed.post.dto.request.PostDeleteRequestDto;
+import com.example.nbcnewsfeed.post.dto.request.PostRestoreRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
 import com.example.nbcnewsfeed.post.dto.response.PostPageResponseDto;
@@ -29,11 +31,8 @@ public class PostController {
     public ResponseEntity<PostSaveResponseDto> save(
             @Validated @RequestBody PostSaveRequestDto requestDto
     ) {
-        //todo JWT에서 사용자 Id 추출
-        //
-        return new ResponseEntity<>(postService.save(
-                userId,
-                requestDto), HttpStatus.CREATED);
+        //todo JWT에서 사용자 Id 추출 방식으로 변경 시 userId, requestDto 분리 필요
+        return new ResponseEntity<>(postService.save(requestDto), HttpStatus.CREATED);
     }
 
     //게시글 다건 조회(R) 페이지네이션
@@ -62,13 +61,11 @@ public class PostController {
     @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
     public ResponseEntity<PostUpdateResponseDto> update(
             @PathVariable Long postId,
-            //todo JWT에서 사용자 Id 추출
-            //
+            //todo JWT에서 사용자 Id 추출 방식으로 변경 시 userId, requestDto 분리 필요
             @Validated @RequestBody PostUpdateRequestDto requestDto
     ) {
         return ResponseEntity.ok(postService.update(
                 postId,
-                userId,
                 requestDto
         ));
     }
@@ -77,14 +74,12 @@ public class PostController {
     @DeleteMapping("/posts/{postId}")
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteById(
-            @PathVariable Long postId
-            //todo JWT에서 사용자 Id 추출
-            //
+            @PathVariable Long postId,
+            //todo JWT에서 사용자 Id 추출 방식으로 변경 시 PostDeleterequestDto 삭제 필요
+            PostDeleteRequestDto requestDto
     ) {
-        postService.deleteById(
-                postId,
-                userId
-        );
+        //todo JWT에서 사용자 Id 추출 방식으로 변경 시 매개변수 userId로 수정 필요
+        postService.deleteById(postId, requestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -92,10 +87,10 @@ public class PostController {
     @PutMapping("/posts/{postId}")
     @Operation(summary = "게시글 복원", description = "삭제되었던 게시글을 복원합니다.")
     public ResponseEntity<PostResponseDto> restore(
-            @PathVariable Long postId
+            @PathVariable Long postId,
             //todo JWT에서 사용자 Id 추출
-            //
+            PostRestoreRequestDto requestDto
     ) {
-        return ResponseEntity.ok(postService.restore(postId, userId));
+        return ResponseEntity.ok(postService.restore(postId, requestDto));
     }
 }

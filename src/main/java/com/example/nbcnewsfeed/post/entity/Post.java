@@ -33,7 +33,6 @@ public class Post extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-
     public Post(
             User user,
             String imageUrl,

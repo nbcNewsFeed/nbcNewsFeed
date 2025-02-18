@@ -1,5 +1,9 @@
 package com.example.nbcnewsfeed.post.service;
 
+import com.example.nbcnewsfeed.comment.dto.CommentCountDto;
+import com.example.nbcnewsfeed.comment.repository.CommentRepository;
+import com.example.nbcnewsfeed.post.dto.request.PostDeleteRequestDto;
+import com.example.nbcnewsfeed.post.dto.request.PostRestoreRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
 import com.example.nbcnewsfeed.post.dto.response.PostPageResponseDto;
@@ -32,18 +36,18 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
-    public PostSaveResponseDto save(
-            Long userId,
-            PostSaveRequestDto requestDto) {
-        User user = userRepository.findById(userId).orElseThrow(
+    public PostSaveResponseDto save(PostSaveRequestDto requestDto) {
+        User user = userRepository.findById(requestDto.getUserId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         Post post = new Post(
                 user,
                 requestDto.getImageUrl(),
-                requestDto.getContents());
+                requestDto.getContents()
+        );
         postRepository.save(post);
         return new PostSaveResponseDto(
                 post.getId(),
@@ -105,14 +109,13 @@ public class PostService {
     @Transactional
     public PostUpdateResponseDto update(
             Long postId,
-            Long userId,
             PostUpdateRequestDto requestDto) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 //      post 작성자가 맞는지 검증
-        if(!userId.equals(post.getUser().getId())) {
+        if(!requestDto.getUserId().equals(post.getUser().getId())) {
             throw new IllegalArgumentException("작성자 본인만 수정할 수 있습니다.");
         }
         post.update(requestDto.getImageUrl(), requestDto.getContents());
@@ -129,20 +132,21 @@ public class PostService {
     @Transactional
     public void deleteById(
             Long postId,
-            Long userId
+            //todo JWT에서 사용자 Id 추출 방식으로 변경 시 Long userId 로 변경 필요
+            PostDeleteRequestDto requestDto
     ) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         //post 작성자가 맞는지 검증
-        if(!userId.equals(post.getUser().getId())) {
+        if(!requestDto.getUserId().equals(post.getUser().getId())) {
             throw new IllegalArgumentException("작성자 본인만 삭제할 수 있습니다.");
         }
         post.createDeletedAt(LocalDateTime.now());
     }
 
-    // 2주가 지난 사용자 물리 삭제
+    // 2주가 지난 게시글 물리 삭제
     @Transactional
     @Scheduled(cron = "0 0 3 * * ?")
     public void deletePosts() {
@@ -154,13 +158,16 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto restore(Long postId, Long userId) {
+    public PostResponseDto restore(
+            Long postId,
+            PostRestoreRequestDto requestDto
+    ) {
         //post null 검증
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
         //post 작성자가 맞는지 검증
-        if(!userId.equals(post.getUser().getId())) {
+        if(!requestDto.getUserId().equals(post.getUser().getId())) {
             throw new IllegalArgumentException("작성자 본인만 게시글을 복구할 수 있습니다.");
         }
         post.createDeletedAt(null);
