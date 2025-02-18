@@ -6,14 +6,10 @@ import com.example.nbcnewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
 
 @Getter
 @Entity
 @NoArgsConstructor
-@Filter(name = "activeUserFilter", condition = "user_id IN (SELECT id FROM user WHERE deleted_at IS NULL)")
-@FilterDef(name = "activeUserFilter")
 public class Comment extends BaseEntity {
 
     @Id
