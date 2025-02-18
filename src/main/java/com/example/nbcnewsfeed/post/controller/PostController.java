@@ -85,7 +85,7 @@ public class PostController {
     }
 
     //삭제된 게시글 복구(삭제된 후 2주 지나기 전)
-    @PutMapping("/posts/{postId}")
+    @PutMapping("/posts/{postId}/restore")
     @Operation(summary = "게시글 복원", description = "삭제되었던 게시글을 복원합니다.")
     public ResponseEntity<PostResponseDto> restore(
             @PathVariable Long postId,

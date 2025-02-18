@@ -1,6 +1,5 @@
 package com.example.nbcnewsfeed.post.service;
 
-import com.example.nbcnewsfeed.comment.dto.CommentCountDto;
 import com.example.nbcnewsfeed.comment.repository.CommentRepository;
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
@@ -43,7 +42,8 @@ public class PostService {
         Post post = new Post(
                 user,
                 requestDto.getImageUrl(),
-                requestDto.getContents()
+                requestDto.getContents(),
+                0L
         );
         postRepository.save(post);
         return new PostSaveResponseDto(
@@ -51,6 +51,7 @@ public class PostService {
                 user.getId(),
                 post.getImageUrl(),
                 post.getContents(),
+                post.getNumOfCount(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -65,26 +66,17 @@ public class PostService {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         // Post Page 조회
         Page<Post> postPage = postRepository.findAll(pageable);
-        // Post ID 리스트 추출
-        List<Long> postIds = postPage.stream()
-                .map(Post::getId)
-                .collect(Collectors.toList());
-        // CommentCountDto 클래스, countByPostIds 메서드 필요
-        // 별도 쿼리로 댓글 수 조회
-        //todo domain 별 repository 분리 -> commentservice 에서 commentrepository 로 접근
-        List<CommentCountDto> countResults = commentRepository.countByPostIds(postIds);
-        Map<Long, Long> commentCountMap = countResults.stream()
-                .collect(Collectors.toMap(CommentCountDto::getPostId, CommentCountDto::getCount));
-        // 각 Post를 PostPageResponseDto로 변환 (댓글 수는 Long을 int로 변환)
-        return postPage.map(post -> new PostPageResponseDto(
-                post.getId(),
-                post.getId(),
-                post.getImageUrl(),
-                post.getContents(),
-                commentCountMap.getOrDefault(post.getId(), 0L).intValue(),
-                post.getCreatedAt(),
-                post.getModifiedAt()
-        ));
+        return postPage.map(
+                post -> new PostPageResponseDto(
+                        post.getId(),
+                        post.getUser().getId(),
+                        post.getImageUrl(),
+                        post.getContents(),
+                        post.getNumOfCount(),
+                        post.getCreatedAt(),
+                        post.getModifiedAt()
+                )
+        );
     }
 
     @Transactional(readOnly = true)
@@ -98,6 +90,7 @@ public class PostService {
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
+                post.getNumOfCount(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -122,6 +115,7 @@ public class PostService {
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
+                post.getNumOfCount(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -173,6 +167,7 @@ public class PostService {
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
+                post.getNumOfCount(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
