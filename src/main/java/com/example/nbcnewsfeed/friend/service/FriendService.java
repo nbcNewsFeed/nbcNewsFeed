@@ -1,9 +1,6 @@
 package com.example.nbcnewsfeed.friend.service;
 
-import com.example.nbcnewsfeed.friend.dto.CreateFriendRequestDto;
-import com.example.nbcnewsfeed.friend.dto.DeleteFriendshipDto;
-import com.example.nbcnewsfeed.friend.dto.FriendshipListDto;
-import com.example.nbcnewsfeed.friend.dto.UpdateFriendRequestDto;
+import com.example.nbcnewsfeed.friend.dto.*;
 import com.example.nbcnewsfeed.friend.entity.FriendRequest;
 import com.example.nbcnewsfeed.friend.entity.FriendStatus;
 import com.example.nbcnewsfeed.friend.entity.Friendship;
@@ -30,25 +27,25 @@ public class FriendService {
     private final FriendshipRepository friendshipRepository;
 
     @Transactional
-    public void sendFriendRequest(CreateFriendRequestDto requestDto) {
+    public void sendFriendRequest(Long loginId, Long receiverId) {
 
         // 받는 사람과 보내는 사람이 실제로 존재하는지 확인
-        User senderUser = userService.findUserById(requestDto.getSenderId());
-        User receiverUser = userService.findUserById(requestDto.getReceiverId());
+        User senderUser = userService.findUserById(loginId);
+        User receiverUser = userService.findUserById(receiverId);
 
-        Long senderId = senderUser.getId();
-        Long receiverId = receiverUser.getId();
+//        Long senderId = senderUser.getId();
+//        Long receiverId = receiverUser.getId();
 
 
-        if(friendshipRepository.existsFriendshipByUser1IdAndUser2Id(senderId, receiverId)){
+        if(friendshipRepository.existsFriendshipByUser1IdAndUser2Id(loginId, receiverId)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 상태입니다.");
         }
 
-        if(friendRequestRepository.existsFriendRequestBySenderIdAndReceiverIdAndFriendStatus(senderId, receiverId, FriendStatus.WAITING)){
+        if(friendRequestRepository.existsFriendRequestBySenderIdAndReceiverIdAndFriendStatus(loginId, receiverId, FriendStatus.WAITING)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 요청을 보냈습니다. (내가 보냈던 거 까먹고 다시 보냈을때)");
         }
 
-        if(friendRequestRepository.existsFriendRequestBySenderIdAndReceiverIdAndFriendStatus(receiverId, senderId, FriendStatus.WAITING)){
+        if(friendRequestRepository.existsFriendRequestBySenderIdAndReceiverIdAndFriendStatus(receiverId, loginId, FriendStatus.WAITING)){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "친구 요청 목록을 확인해주세요. (해당 사람에게 요청이 들어온 줄 모르고 요청을 보냈을때) ");
         }
 
@@ -58,26 +55,24 @@ public class FriendService {
     }
 
     @Transactional
-    public String updateFriendRequest(UpdateFriendRequestDto requestDto) {
+    public String updateFriendRequest(Long loginId, Long requesterId, UpdateFriendRequestDto requestDto) {
 
-        User senderUser = userService.findUserById(requestDto.getSenderId());
-        User receiverUser = userService.findUserById(requestDto.getReceiverId());
+        User senderUser = userService.findUserById(requesterId); // 요청보낸 사람의 Id
+        User receiverUser = userService.findUserById(loginId); // 요청받은 사람의 Id (현재 로그인된 사용자)
 
-        Long senderId = senderUser.getId();
-        Long receiverId = receiverUser.getId();
-
-        if(friendshipRepository.existsFriendshipByUser1IdAndUser2Id(senderId, receiverId)){
+        if(friendshipRepository.existsFriendshipByUser1IdAndUser2Id(requesterId, loginId)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 상태입니다.");
         }
 
-        if(!friendRequestRepository.existsFriendRequestBySenderIdAndReceiverIdAndFriendStatus(senderId, receiverId, FriendStatus.WAITING)){
+        if(!friendRequestRepository.existsFriendRequestBySenderIdAndReceiverIdAndFriendStatus(requesterId, loginId, FriendStatus.WAITING)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 사용자에게 친구 요청을 받지 않았습니다.");
         }
 
-        FriendRequest findFriendRequest = friendRequestRepository.findFriendRequestBySenderIdAndReceiverIdAndFriendStatus(senderId, receiverId, FriendStatus.WAITING);
+        // 친구 요청 대기 테이블에서 두 사용자의 요청 현황 뽑아오기
+        FriendRequest findFriendRequest = friendRequestRepository.findFriendRequestBySenderIdAndReceiverIdAndFriendStatus(requesterId, loginId, FriendStatus.WAITING);
 
         if(requestDto.getIsAcceptOrReject()){
-            findFriendRequest.updateFriendStatus(FriendStatus.ACCEPTED);
+            findFriendRequest.updateFriendStatus(FriendStatus.ACCEPTED); //뽑아온 현황에서 친구 상태를 Accepted 로 변경
 
             Friendship friendship1 = new Friendship(senderUser, receiverUser);
             Friendship friendship2 = new Friendship(receiverUser, senderUser);
@@ -104,9 +99,9 @@ public class FriendService {
     }
 
     @Transactional
-    public void deleteFriend(DeleteFriendshipDto requestDto) {
-        User user1 = userService.findUserById(requestDto.getUser1Id());
-        User user2 = userService.findUserById(requestDto.getUser2Id());
+    public void deleteFriend(Long loginId, Long deleteId) {
+        User user1 = userService.findUserById(loginId); // 현재 로그인된 사용자
+        User user2 = userService.findUserById(deleteId); //삭제하고싶은 사용자
 
         Friendship friendship1 = friendshipRepository.findFriendshipsByUser1AndUser2(user1, user2);
         Friendship friendship2 = friendshipRepository.findFriendshipsByUser1AndUser2(user2, user1);
@@ -129,5 +124,18 @@ public class FriendService {
         if(friendshipsByUser != null){
             friendshipsByUser.forEach(Friendship::softDelete);
         } else throw new IllegalStateException("해당 아이디는 삭제할 친구가 없습니다.");
+    }
+
+    public List<FriendRequestListDto> getFriendRequests(Long loginId) {
+
+        List<FriendRequest> friendRequestsList = friendRequestRepository.findFriendRequestBySenderIdOrReceiverIdAndFriendStatus(loginId, loginId, FriendStatus.WAITING);
+
+        return friendRequestsList.stream()
+                .map(request -> new FriendRequestListDto(
+                        request.getSender().getId(),
+                        request.getReceiver().getId(),
+                        request.getFriendStatus()
+                ))
+                .collect(Collectors.toList());
     }
 }
