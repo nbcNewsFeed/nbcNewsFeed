@@ -44,7 +44,7 @@ public class UserController {
 
     // 사용자 수정 -> 프로필 사진, 닉네임, 한 줄 소개
     @PatchMapping("/me")
-    @Operation(summary = "사용자 수정", description = "로그인한 사용자의 닉네임, 프로필 사진, 소개를 수정합니다.")
+    @Operation(summary = "사용자 정보 수정", description = "로그인한 사용자의 닉네임, 프로필 사진, 소개를 수정합니다.")
     public ResponseEntity<UserResponseDto> updateUser(
             @Valid @RequestBody ChangeUserDto requestDto,
             HttpServletRequest request
@@ -57,7 +57,7 @@ public class UserController {
 
     // 사용자 수정 -> 비밀번호
     @PatchMapping("me/password")
-    @Operation(summary = "사용자 수정", description = "로그인한 사용자의 비밀번호를 수정합니다.")
+    @Operation(summary = "사용자 비밀번호 수정", description = "로그인한 사용자의 비밀번호를 수정합니다.")
     public ResponseEntity<UserResponseDto> updatePasswordUser(
             @Valid @RequestBody ChangePasswordDto requestDto,
             HttpServletRequest request
