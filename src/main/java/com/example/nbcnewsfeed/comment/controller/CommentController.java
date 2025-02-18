@@ -40,33 +40,33 @@ public class CommentController {
     }
 
     // 댓글 단건 조회
-    @GetMapping("/comments/{postId}/{commentId}")
+    @GetMapping("/comments/{commentId}")
     @Operation(summary = "댓글 단건 조회", description = "postId, commentId로 댓글을 조회합니다.")
     public ResponseEntity<CommentResponseDto> findOne(
-            @PathVariable Long id
+            @PathVariable Long commentId
     ) {
-        return ResponseEntity.ok(commentService.findOne(id));
+        return ResponseEntity.ok(commentService.findOne(commentId));
     }
 
     // 댓글 수정
-    @PutMapping("/comments/{postId}/{commentsId}")
+    @PutMapping("/comments/{commentId}")
     @Operation(summary = "댓글 수정", description = "postId, commentId로 댓글을 수정합니다.")
     public ResponseEntity<CommentResponseDto> update(
             @SessionAttribute(name = "LOGIN_USER") Long userId,
-            @PathVariable Long id,
+            @PathVariable Long commentId,
             @RequestBody CommentUpdateRequestDto dto
     ) {
-        return ResponseEntity.ok(commentService.update(id, userId, dto));
+        return ResponseEntity.ok(commentService.update(commentId, userId, dto));
     }
 
     // 댓글 삭제
-    @DeleteMapping("/comments/{postId}/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
     public ResponseEntity<Void> delete(
             @SessionAttribute(name = "LOGIN_USER") Long userId,
-            @PathVariable Long id
+            @PathVariable Long commentId
     ) {
-        commentService.delete(id, userId);
+        commentService.delete(commentId, userId);
         return ResponseEntity.ok().build();
     }
 }
