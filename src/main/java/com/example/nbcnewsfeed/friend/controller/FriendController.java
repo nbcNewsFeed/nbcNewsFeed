@@ -23,7 +23,7 @@ public class FriendController {
     private final FriendService friendService;
 
     // 친구 요청 전송 컨트롤러
-    @PostMapping
+    @PostMapping ("/request")
     @Operation(summary="친구 추가 요청 기능", description = "senderId와 receiverId를 통해 친구 요청을 전송합니다.")
     public ResponseEntity<String> sendFriendRequest (
             @RequestParam Long receiverId,
@@ -41,7 +41,7 @@ public class FriendController {
 
     }
 
-    @PatchMapping
+    @PatchMapping("/response")
     @Operation(summary = "친구 수락 및 거절 기능", description = "친구 요청을 수락하거나 거절할 수 있습니다. 친구요청 테이블의 friendStatus가 변경됩니다.")
     public ResponseEntity<String> updateFriendRequest (
             @RequestParam Long requesterId,
@@ -58,7 +58,7 @@ public class FriendController {
     }
 
 
-    @GetMapping("/requestlist")
+    @GetMapping("/request-list")
     @Operation(summary ="친구 요청 목록 조회 기능", description = "해당 id 사용자가 요청했거나/요청받은 목록을 조회합니다.")
     public ResponseEntity<List<FriendRequestListDto>> getFriendRequests (
             HttpServletRequest request
@@ -71,7 +71,7 @@ public class FriendController {
     }
 
 
-    @GetMapping("/friendList")
+    @GetMapping("/friend-list")
     @Operation(summary = "친구 목록 조회 기능", description = "해당 id 사용자의 친구 관계를 전체 조회합니다.")
     public ResponseEntity<List<FriendshipListDto>> getFriendshipList (
             HttpServletRequest request
@@ -82,7 +82,7 @@ public class FriendController {
         return new ResponseEntity<>(frinendshipList, HttpStatus.OK);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     @Operation(summary = "친구 삭제 기능 (1명)", description = "해당 id 사용자의 친구 중 한 명을 삭제할 수 있습니다.")
     public ResponseEntity<String> deleteFriend (
             @RequestParam Long deleteId, // 삭제하고 싶은 친구(사용자 Id)
@@ -98,7 +98,7 @@ public class FriendController {
         return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
     }
 
-    @DeleteMapping("/deletefriend")
+    @DeleteMapping("/delete-all")
     @Operation(summary = "친구 전체 삭제 기능", description = "해당 id 사용자의 친구 관계를 전체 삭제할 수 있습니다.")
     public ResponseEntity<String> deleteAllFriendByUserId(HttpServletRequest request){
         Long loginId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
