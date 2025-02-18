@@ -41,7 +41,7 @@ public class CommentController {
 
     // 댓글 단건 조회
     @GetMapping("/comments/{commentId}")
-    @Operation(summary = "댓글 단건 조회", description = "postId, commentId로 댓글을 조회합니다.")
+    @Operation(summary = "댓글 단건 조회", description = "commentId로 댓글을 조회합니다.")
     public ResponseEntity<CommentResponseDto> findOne(
             @PathVariable Long commentId
     ) {
@@ -50,7 +50,7 @@ public class CommentController {
 
     // 댓글 수정
     @PutMapping("/comments/{commentId}")
-    @Operation(summary = "댓글 수정", description = "postId, commentId로 댓글을 수정합니다.")
+    @Operation(summary = "댓글 수정", description = "commentId로 댓글을 수정합니다.")
     public ResponseEntity<CommentResponseDto> update(
             @SessionAttribute(name = "LOGIN_USER") Long userId,
             @PathVariable Long commentId,
