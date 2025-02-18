@@ -50,9 +50,7 @@ public class UserController {
             HttpServletRequest request
     ) {
         Long currentUserId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
-//        String email = (String) request.getAttribute("email");
         log.info("userController - updateUser userId={}",currentUserId);
-//        Long currentUserId = getCurrentUserId(request);
         UserResponseDto userResponseDto = userService.updateUser(currentUserId, requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
