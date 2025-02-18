@@ -121,6 +121,10 @@ public class UserService {
         }
     }
 
+    public User findUserById(Long id){
+        return userRepository.findByIdOrElseThrow(id);
+    }
+
 
 
 }
