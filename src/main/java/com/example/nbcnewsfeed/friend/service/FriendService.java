@@ -9,8 +9,8 @@ import com.example.nbcnewsfeed.friend.entity.FriendStatus;
 import com.example.nbcnewsfeed.friend.entity.Friendship;
 import com.example.nbcnewsfeed.friend.repository.FriendRequestRepository;
 import com.example.nbcnewsfeed.friend.repository.FriendshipRepository;
-import com.example.nbcnewsfeed.user.User;
-import com.example.nbcnewsfeed.user.UserClient;
+import com.example.nbcnewsfeed.user.entity.User;
+import com.example.nbcnewsfeed.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class FriendService {
-    private final UserClient userService;
+    private final UserService userService;
     private final FriendRequestRepository friendRequestRepository;
     private final FriendshipRepository friendshipRepository;
 

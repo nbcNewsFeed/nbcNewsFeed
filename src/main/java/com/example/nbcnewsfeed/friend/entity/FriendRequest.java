@@ -1,7 +1,7 @@
 package com.example.nbcnewsfeed.friend.entity;
 
 import com.example.nbcnewsfeed.common.entity.BaseEntity;
-import com.example.nbcnewsfeed.user.User;
+import com.example.nbcnewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 
