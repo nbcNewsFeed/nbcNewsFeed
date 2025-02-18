@@ -5,6 +5,10 @@ import com.example.nbcnewsfeed.comment.dto.request.CommentUpdateRequestDto;
 import com.example.nbcnewsfeed.comment.dto.response.CommentResponseDto;
 import com.example.nbcnewsfeed.comment.entity.Comment;
 import com.example.nbcnewsfeed.comment.repository.CommentRepository;
+import com.example.nbcnewsfeed.post.entity.Post;
+import com.example.nbcnewsfeed.post.repository.PostRepository;
+import com.example.nbcnewsfeed.user.entity.User;
+import com.example.nbcnewsfeed.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +45,7 @@ public class CommentService {
                 post.getId(),
                 comment.getContent(),
                 comment.getCreatedAt(),
-                comment.getUpdatedAt()
+                comment.getModifiedAt()
         );
     }
 
@@ -56,7 +60,7 @@ public class CommentService {
                         comment.getPost().getId(),
                         comment.getContent(),
                         comment.getCreatedAt(),
-                        comment.getUpdatedAt()))
+                        comment.getModifiedAt()))
                 .collect(Collectors.toList());
     }
 
@@ -72,7 +76,7 @@ public class CommentService {
                 comment.getPost().getId(),
                 comment.getContent(),
                 comment.getCreatedAt(),
-                comment.getUpdatedAt());
+                comment.getModifiedAt());
     }
 
     // Update
@@ -97,7 +101,7 @@ public class CommentService {
                 comment.getPost().getId(),
                 comment.getContent(),
                 comment.getCreatedAt(),
-                comment.getUpdatedAt());
+                comment.getModifiedAt());
     }
 
     @Transactional
