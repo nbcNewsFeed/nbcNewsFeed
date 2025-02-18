@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "posts")
-@Filter(name = "activePostFilter", condition = "deleted_at is null")
+@Table(name = "post")
 @FilterDef(name = "activePostFilter")
+@Filter(name = "activePostFilter", condition = "deleted_at is null")
 public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
