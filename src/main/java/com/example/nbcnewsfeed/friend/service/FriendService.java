@@ -127,9 +127,8 @@ public class FriendService {
     }
 
     public List<FriendRequestListDto> getFriendRequests(Long loginId) {
-        User user = userService.findUserById(loginId);
 
-        List<FriendRequest> friendRequestsList = friendRequestRepository.findFriendRequestBySenderIdOrReceiverId(loginId, loginId);
+        List<FriendRequest> friendRequestsList = friendRequestRepository.findFriendRequestBySenderIdOrReceiverIdAndFriendStatus(loginId, loginId, FriendStatus.WAITING);
 
         return friendRequestsList.stream()
                 .map(request -> new FriendRequestListDto(

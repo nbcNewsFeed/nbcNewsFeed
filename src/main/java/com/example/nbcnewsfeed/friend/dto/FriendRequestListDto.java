@@ -6,13 +6,14 @@ import lombok.Getter;
 @Getter
 public class FriendRequestListDto { //친구 요청 목록 반환 dto
 
-    private final Long user1Id;
-    private final Long user2Id;
+    private final Long senderId;
+    private final Long receiverId;
     private final FriendStatus friendStatus;
 
-    public FriendRequestListDto(Long user1Id, Long user2Id, FriendStatus friendStatus) {
-        this.user1Id = user1Id;
-        this.user2Id = user2Id;
+
+    public FriendRequestListDto(Long senderId, Long receiverId, FriendStatus friendStatus) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
         this.friendStatus = friendStatus;
     }
 }

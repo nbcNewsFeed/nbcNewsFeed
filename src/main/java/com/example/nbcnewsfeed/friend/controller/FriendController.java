@@ -30,7 +30,6 @@ public class FriendController {
             HttpServletRequest request
     ){
         Long loginId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
-        log.info("******* 로그인된 사용자 = {} *******", loginId);
 
         if (loginId.equals(receiverId)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신에게 친구요청 불가능합니다.");
@@ -99,7 +98,7 @@ public class FriendController {
         return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/deletefriend")
     @Operation(summary = "친구 전체 삭제 기능", description = "해당 id 사용자의 친구 관계를 전체 삭제할 수 있습니다.")
     public ResponseEntity<String> deleteAllFriendByUserId(HttpServletRequest request){
         Long loginId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
