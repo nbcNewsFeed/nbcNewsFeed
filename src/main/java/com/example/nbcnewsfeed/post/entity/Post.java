@@ -1,6 +1,7 @@
 package com.example.nbcnewsfeed.post.entity;
 
 import com.example.nbcnewsfeed.common.entity.BaseEntity;
+import com.example.nbcnewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -20,32 +21,33 @@ public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //User class N:1 연관관계 매핑
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
+
+//  User class N:1 연관관계 매핑
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     @Column(name = "image_url")
     private String imageUrl;
     @Column(name = "contents")
     private String contents;
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
+    private Long numOfCount;
 
     public Post(
-//            User user,
+            User user,
             String imageUrl,
-            String contents
+            String contents,
+            Long numOfComment
     ) {
-//        this.user = user;
+        this.user = user;
         this.imageUrl = imageUrl;
         this.contents = contents;
+        this.numOfCount = numOfComment;
     }
 
     public void update(
-            @NotBlank(message = "사진을 넣어주세요.")
             String imageUrl,
-            @NotBlank(message = "내용을 입력해 주세요.")
             String contents) {
         this.imageUrl = imageUrl;
         this.contents = contents;
@@ -53,5 +55,9 @@ public class Post extends BaseEntity {
 
     public void createDeletedAt(LocalDateTime now) {
         this.deletedAt = now;
+    }
+
+    public void updateNumofComment(long numOfComment) {
+        this.numOfCount = numOfComment;
     }
 }
