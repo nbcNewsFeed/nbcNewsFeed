@@ -5,14 +5,12 @@ import com.example.nbcnewsfeed.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -46,27 +44,26 @@ public class UserController {
 
     // 사용자 수정 -> 프로필 사진, 닉네임, 한 줄 소개
     @PatchMapping("/me")
-    @Operation(summary = "사용자 수정", description = "로그인한 사용자의 닉네임, 프로필 사진, 소개를 수정합니다.")
+    @Operation(summary = "사용자 정보 수정", description = "로그인한 사용자의 닉네임, 프로필 사진, 소개를 수정합니다.")
     public ResponseEntity<UserResponseDto> updateUser(
             @Valid @RequestBody ChangeUserDto requestDto,
             HttpServletRequest request
     ) {
-        Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
-//        String email = (String) request.getAttribute("email");
-        log.info("userController userId={}",userId);
-//        Long currentUserId = getCurrentUserId(request);
-        UserResponseDto userResponseDto = userService.updateUser(userId, requestDto);
+        Long currentUserId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
+        log.info("userController - updateUser userId={}",currentUserId);
+        UserResponseDto userResponseDto = userService.updateUser(currentUserId, requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     // 사용자 수정 -> 비밀번호
     @PatchMapping("me/password")
-    @Operation(summary = "사용자 수정", description = "로그인한 사용자의 비밀번호를 수정합니다.")
+    @Operation(summary = "사용자 비밀번호 수정", description = "로그인한 사용자의 비밀번호를 수정합니다.")
     public ResponseEntity<UserResponseDto> updatePasswordUser(
             @Valid @RequestBody ChangePasswordDto requestDto,
             HttpServletRequest request
     ) {
-        Long currentUserId = getCurrentUserId(request);
+        Long currentUserId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
+        log.info("userController - updatePasswordUser userId={}",currentUserId);
         UserResponseDto userResponseDto = userService.updatePasswordUser(currentUserId, requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
@@ -74,31 +71,22 @@ public class UserController {
     // 사용자 삭제
     @DeleteMapping
     @Operation(summary = "사용자 삭제", description = "비밀번호 일치 시 사용자를 삭제합니다.")
-    public ResponseEntity<Void> deleteUser(
+    public ResponseEntity<String> deleteUser(
             @RequestBody DeleteUserRequestDto requestDto,
-            HttpServletRequest request) {
-        Long currentUserId = getCurrentUserId(request);
+            HttpServletRequest request
+    ) {
+        Long currentUserId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
         userService.deleteUser(currentUserId, requestDto);
-        request.getSession(false).invalidate();
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("사용자 삭제가 완료되었습니다.",HttpStatus.OK);
     }
 
     // 삭제된 사용자 복구
-    @PutMapping
+    @PutMapping("/restore")
     @Operation(summary = "사용자 복구", description = "이메일과 비밀번호 입력 시, 사용자를 복구합니다.")
     public ResponseEntity<UserResponseDto> restoreUser(
             @RequestBody RestoreUserDto requestDto
     ) {
         UserResponseDto userResponseDto = userService.restoreUser(requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
-    }
-
-    // 권한 세션 검증 로직
-    private Long getCurrentUserId(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "권한이 없습니다.");
-        }
-        return (Long) session.getAttribute("userId");
     }
 }

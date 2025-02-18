@@ -20,7 +20,7 @@ public class JwtFilter implements Filter {
 
     private final JwtUtil jwtUtil;
 
-    private static final String[] WHITE_LIST = {"/users/signup", "/login", "/swagger-ui/*"};
+    private static final String[] WHITE_LIST = {"/users/restore", "/users/signup", "/login", "/swagger-ui/**", "/v3/api-docs/**"};
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
