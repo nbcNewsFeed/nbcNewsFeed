@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.toList());
 
-        ErrorResponse errorResponse = new ErrorResponse("회원가입에 실패했습니다.", errorMessages);
+        ErrorResponse errorResponse = new ErrorResponse("잘못된 입력입니다.", errorMessages);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
