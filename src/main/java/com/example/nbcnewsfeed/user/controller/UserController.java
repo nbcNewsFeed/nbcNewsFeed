@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -49,9 +51,11 @@ public class UserController {
             @Valid @RequestBody ChangeUserDto requestDto,
             HttpServletRequest request
     ) {
-//        request.getAttribute();
-        Long currentUserId = getCurrentUserId(request);
-        UserResponseDto userResponseDto = userService.updateUser(currentUserId, requestDto);
+        Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
+//        String email = (String) request.getAttribute("email");
+        log.info("userController userId={}",userId);
+//        Long currentUserId = getCurrentUserId(request);
+        UserResponseDto userResponseDto = userService.updateUser(userId, requestDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 

@@ -55,16 +55,16 @@ public class JwtFilter implements Filter {
 
         log.info("doFilter jwt={}", jwt);
 
-        Claims claims = jwtUtil.extractClaims(jwt);
-        log.info("ddddddddddddddd");
-        log.info("doFilter claims={}",claims);
-
         try{
-
+            Claims claims = jwtUtil.extractClaims(jwt);
+            log.info("ddddddddddddddd");
+            log.info("doFilter claims={}",claims);
 
             //todo 이 객체를 controller request로 받아오기 getAttribute
             httpRequest.setAttribute("userId",claims.getSubject());
-//            httpRequest.setAttribute("email",claims.);
+            httpRequest.setAttribute("email",claims.get("email"));
+            log.info("doFilter userId={}",claims.getSubject());
+            log.info("doFilter email={}",claims.get("email"));
 
             chain.doFilter(request,response);
         } catch (SecurityException | MalformedJwtException e) {

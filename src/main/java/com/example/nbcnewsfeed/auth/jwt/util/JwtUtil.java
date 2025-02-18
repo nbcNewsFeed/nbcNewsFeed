@@ -28,15 +28,17 @@ public class JwtUtil {
 
     // JWT 생성
     public String createJwt(Long userId, String email) {
-        Date date = new Date();
+
+        Date now = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                    .setSubject(String.valueOf(userId))
-                    .claim("email",email) //이메일 저장
+                    .setHeaderParam("typ", "JWT")
+                    .setSubject(String.valueOf(userId)) //  JWT의 Subject 필드에 고유 식별자인 사용자의 ID를 저장
+                    .claim("email", email) // JWT의 클레임(토큰에 담기는 정보)에 사용자의 이메일을 추가
 //                    .claim("authority",authority.name()) // JWT의 클레임(토큰에 담기는 정보)에 사용자의 권한(USER, ADMIN) ENUM 값 추가
-                    .setIssuedAt(new Date()) // 발급 시간
-                    .setExpiration(new Date(date.getTime() + EXPIRATION)) // 만료 시간 설정(30분)
+                    .setIssuedAt(now) // 발급 시간
+                    .setExpiration(new Date(now.getTime() + EXPIRATION)) // 만료 시간 설정(30분)
                     .signWith(secretKey, SignatureAlgorithm.HS256)  // 키와 알고리즘을 사용하여 JWT에 서명을 추가
                     .compact(); // 최종적으로 토큰을 생성하고 반환
     }
@@ -56,7 +58,8 @@ public class JwtUtil {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey) // 1. 서명을 검증할 키 설정(JWT 위,변조 여부 확인)
                 .build() // 2. JWT 파서 생성
-                .parseClaimsJwt(token)// 3. 토큰 파싱 및 서명 검증
+//                .parseClaimsJwt(token)// 3. 토큰 파싱 및 서명 검증
+                .parseClaimsJws(token)
                 .getBody();// 4. 페이로드(Claims) 추출
     }
 
