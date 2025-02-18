@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class UpdateFriendRequestDto {
+public class UpdateFriendRequestDto { //친구 수락 및 거절하는 dto
 
     @NotNull
     private final Boolean isAcceptOrReject;

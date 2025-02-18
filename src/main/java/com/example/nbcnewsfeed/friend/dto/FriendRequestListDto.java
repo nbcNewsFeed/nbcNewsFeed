@@ -4,7 +4,7 @@ import com.example.nbcnewsfeed.friend.entity.FriendStatus;
 import lombok.Getter;
 
 @Getter
-public class FriendRequestListDto {
+public class FriendRequestListDto { //친구 요청 목록 반환 dto
 
     private final Long user1Id;
     private final Long user2Id;
