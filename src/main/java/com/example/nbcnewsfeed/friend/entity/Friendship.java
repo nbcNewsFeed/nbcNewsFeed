@@ -4,12 +4,18 @@ import com.example.nbcnewsfeed.common.entity.BaseEntity;
 import com.example.nbcnewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @Table(name="friendship")
 @SQLRestriction("deleted=false")
+@Filter(name = "activeFriendshipFilter", condition = "(sender_id IN (SELECT id FROM user WHERE deleted_at IS NULL)) " +
+        "AND (receiver_id IN (SELECT id FROM user WHERE deleted_at IS NULL))" +
+        "AND deleted=false")
+@FilterDef(name = "activeFriendshipFilter")
 public class Friendship extends BaseEntity {
 
     //진짜 친구 테이블
