@@ -125,6 +125,4 @@ public class UserService {
         return userRepository.findByIdOrElseThrow(id);
     }
 
-
-
 }
