@@ -56,9 +56,12 @@ public class FriendService {
 
         FriendRequest friendRequest = friendRequestRepository.findFriendRequestBySenderIdAndReceiverIdAndFriendStatus(loginId, cancelId, FriendStatus.WAITING);
 
-        if(friendRequest != null){
-            friendRequestRepository.delete(friendRequest);
-        } throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id에게 친구 요청 기록이 없습니다.");
+        if(friendRequest==null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id에게 친구 요청 기록이 없습니다.");
+        }
+
+        log.info("*********** 친구 요청 목록 : "+ friendRequest.getId());
+        friendRequestRepository.delete(friendRequest);
 
     }
 
