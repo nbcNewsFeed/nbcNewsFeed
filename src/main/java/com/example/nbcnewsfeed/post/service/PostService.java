@@ -221,7 +221,7 @@ public class PostService {
             return Collections.emptyList();
         }
 
-        // 2. 친구목록 통해서 어쩌구
+        // 2. 친구목록 통해서 게시물 가져오기
         Page<Post> friendPosts = postRepository.findByUserIdIn(friendIds, pageable);
 
 

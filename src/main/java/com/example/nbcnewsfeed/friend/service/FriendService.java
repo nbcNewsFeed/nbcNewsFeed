@@ -33,10 +33,6 @@ public class FriendService {
         User senderUser = userService.findUserById(loginId);
         User receiverUser = userService.findUserById(receiverId);
 
-//        Long senderId = senderUser.getId();
-//        Long receiverId = receiverUser.getId();
-
-
         if(friendshipRepository.existsFriendshipByUser1IdAndUser2Id(loginId, receiverId)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 상태입니다.");
         }
@@ -90,10 +86,6 @@ public class FriendService {
     }
 
     public List<User> getFriendshipList(Long userId) {
-
-//        User user = userService.findUserById(userId);
-//
-//        List<Friendship> friendshipList = friendshipRepository.findFriendshipsByUser1(user);
 
         List<Long> friendIdList = friendshipRepository.findFriendIdByUser1Id(userId); // 단순 아이디 나열
 

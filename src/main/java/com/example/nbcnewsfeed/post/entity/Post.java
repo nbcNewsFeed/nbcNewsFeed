@@ -57,7 +57,7 @@ public class Post extends BaseEntity {
         this.deletedAt = now;
     }
 
-    public void updateNumofComment(long numOfComments) {
+    public void updateNumOfComment(long numOfComments) {
         this.numOfComments = numOfComments;
     }
 }
