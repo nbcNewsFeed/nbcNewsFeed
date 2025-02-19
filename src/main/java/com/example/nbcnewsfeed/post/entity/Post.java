@@ -3,7 +3,6 @@ package com.example.nbcnewsfeed.post.entity;
 import com.example.nbcnewsfeed.common.entity.BaseEntity;
 import com.example.nbcnewsfeed.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Filter;
@@ -57,7 +56,7 @@ public class Post extends BaseEntity {
         this.deletedAt = now;
     }
 
-    public void updateNumOfComment(long numOfComments) {
+    public void updateNumOfComments(long numOfComments) {
         this.numOfComments = numOfComments;
     }
 }
