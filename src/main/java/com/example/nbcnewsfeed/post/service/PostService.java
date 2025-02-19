@@ -1,6 +1,4 @@
 package com.example.nbcnewsfeed.post.service;
-
-import com.example.nbcnewsfeed.common.filter.DeletedAtFilter;
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
 import com.example.nbcnewsfeed.post.dto.response.PostPageResponseDto;
@@ -30,7 +28,6 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final DeletedAtFilter deletedAtFilter;
 
     @Transactional
     public PostSaveResponseDto save(Long userId, PostSaveRequestDto requestDto) {
@@ -60,7 +57,7 @@ public class PostService {
     public Page<PostPageResponseDto> findAllPage(int page, int size) {
 
         //deleted_at 필터 활성 메서드
-        deletedAtFilter.enableSoftDeleteFilter();
+        postRepository.enableSoftDeleteFilter();
 
         // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
         int adjustedPage = (page > 0) ? page - 1 : 0;
@@ -85,7 +82,7 @@ public class PostService {
     public PostResponseDto findById(Long id) {
 
         //deleted_at 필터 활성 메서드
-        deletedAtFilter.enableSoftDeleteFilter();
+        postRepository.enableSoftDeleteFilter();
 
         Post post = postRepository.findByIdWithFilterOrElseThrow(id);
 

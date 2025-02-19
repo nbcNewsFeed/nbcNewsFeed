@@ -1,17 +1,18 @@
-package com.example.nbcnewsfeed.common.filter;
+package com.example.nbcnewsfeed.post.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
-import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
-@Component
-public class DeletedAtFilter {
+public class PostRepositoryImpl implements PostRepositoryCustom {
 
     @PersistenceContext
     private final EntityManager entityManager;
 
+    public PostRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    @Override
     public void enableSoftDeleteFilter() {
         Session session = entityManager.unwrap(Session.class);
         session.enableFilter("activePostFilter");

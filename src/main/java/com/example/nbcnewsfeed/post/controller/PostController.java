@@ -1,5 +1,4 @@
 package com.example.nbcnewsfeed.post.controller;
-
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
 import com.example.nbcnewsfeed.post.dto.response.PostPageResponseDto;
