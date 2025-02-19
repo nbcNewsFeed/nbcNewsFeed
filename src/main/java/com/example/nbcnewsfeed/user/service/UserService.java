@@ -1,7 +1,6 @@
 package com.example.nbcnewsfeed.user.service;
 
 import com.example.nbcnewsfeed.common.config.PasswordEncoder;
-import com.example.nbcnewsfeed.common.filter.DeletedAtFilter;
 import com.example.nbcnewsfeed.user.dto.*;
 import com.example.nbcnewsfeed.user.entity.User;
 import com.example.nbcnewsfeed.common.exception.CustomException;
@@ -22,7 +21,6 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final DeletedAtFilter deletedAtFilter;
 
     // signup -> 회원가입
     public UserResponseDto signup(UserSignupDto requestDto) {
@@ -42,7 +40,7 @@ public class UserService {
     public List<UserResponseDto> findUsers(Long id, String nickname) {
 
         //deleted_at 필터 활성 메서드
-        deletedAtFilter.enableSoftDeleteFilter();
+        userRepository.enableSoftDeleteFilter();
 
         List<User> userList = userRepository.findUsers(id, sanitizeString(nickname));
         if (userList.isEmpty()) {

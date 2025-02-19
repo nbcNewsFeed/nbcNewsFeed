@@ -1,6 +1,4 @@
 package com.example.nbcnewsfeed.friend.service;
-
-import com.example.nbcnewsfeed.common.filter.DeletedAtFilter;
 import com.example.nbcnewsfeed.friend.dto.*;
 import com.example.nbcnewsfeed.friend.entity.FriendRequest;
 import com.example.nbcnewsfeed.friend.entity.FriendStatus;
@@ -12,7 +10,6 @@ import com.example.nbcnewsfeed.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.sql.Delete;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,7 +24,6 @@ public class FriendService {
     private final UserService userService;
     private final FriendRequestRepository friendRequestRepository;
     private final FriendshipRepository friendshipRepository;
-    private final DeletedAtFilter deletedAtFilter;
 
     @Transactional
     public void sendFriendRequest(Long loginId, Long receiverId) {
@@ -91,7 +87,6 @@ public class FriendService {
     public List<FriendshipListDto> getFriendshipList(Long userId) {
 
         //deleted_at 필터 활성 메서드
-        deletedAtFilter.enableSoftDeleteFilter();
 
         User user = userService.findUserById(userId);
 
@@ -131,7 +126,6 @@ public class FriendService {
     public List<FriendRequestListDto> getFriendRequests(Long loginId) {
 
         //deleted_at 필터 활성 메서드
-        deletedAtFilter.enableSoftDeleteFilter();
 
         List<FriendRequest> friendRequestsList = friendRequestRepository.findFriendRequestBySenderIdOrReceiverIdAndFriendStatus(loginId, loginId, FriendStatus.WAITING);
 
