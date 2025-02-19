@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "게시글 관리 API", description = "게시글을 관리하는 API 입니다.")
@@ -93,4 +95,18 @@ public class PostController {
         Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
         return ResponseEntity.ok(postService.restore(postId, userId));
     }
+
+    @GetMapping("/posts/friend-post")
+    @Operation(summary = "친구 게시물 조회", description = "친구들의 게시물을 전체 조회합니다.")
+    public ResponseEntity<List<PostResponseDto>> findFriendPost(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request
+    ){
+        Long loginId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
+
+        List<PostResponseDto> friendPost = postService.findFriendPost(page, size, loginId);
+        return ResponseEntity.ok(friendPost);
+    }
+
 }

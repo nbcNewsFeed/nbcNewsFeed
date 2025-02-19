@@ -17,4 +17,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         Session session = entityManager.unwrap(Session.class);
         session.enableFilter("activePostFilter");
     }
+
+    @Override
+    public void disableSoftDeleteFilter() {
+        Session session = entityManager.unwrap(Session.class);
+        session.disableFilter("activePostFilter");
+    }
 }

@@ -84,15 +84,18 @@ public class FriendService {
 
     }
 
-    public List<FriendshipListDto> getFriendshipList(Long userId) {
+    public List<User> getFriendshipList(Long userId) {
 
+<<<<<<< HEAD
         //deleted_at 필터 활성 메서드
 
         User user = userService.findUserById(userId);
+=======
+        List<Long> friendIdList = friendshipRepository.findFriendIdByUser1Id(userId); // 단순 아이디 나열
+>>>>>>> dev
 
-        List<Friendship> friendshipList = friendshipRepository.findFriendshipsByUser1(user);
+        return userService.findUsersByIds(friendIdList);
 
-        return friendshipList.stream().map(FriendshipListDto::toDto).collect(Collectors.toList());
     }
 
     @Transactional
@@ -136,5 +139,9 @@ public class FriendService {
                         request.getFriendStatus()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public List<Long> findFriendIds(Long userId){
+        return friendshipRepository.findFriendIdByUser1Id(userId);
     }
 }
