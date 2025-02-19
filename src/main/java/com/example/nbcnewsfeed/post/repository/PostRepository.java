@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom{
     // 삭제 요청 후 2주 지난 사용자 삭제
     List<Post> findAllByDeletedAtBefore(LocalDateTime twoWeeksAgo);
 
