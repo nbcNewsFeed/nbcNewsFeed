@@ -15,11 +15,13 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
     boolean existsFriendshipByUser1IdAndUser2Id(Long senderId, Long receiverId);
 
-    List<Friendship> findFriendshipsByUser1(User user);
-
     @Query("SELECT f FROM Friendship f WHERE f.user1=:user OR f.user2=:user")
     List<Friendship> findFriendshipsByUser(@Param("user") User user);
 
     Friendship findFriendshipsByUser1AndUser2(User user1, User user2);
+
+    //친구 리스트 반환
+    @Query("SELECT f.user2.id FROM Friendship f WHERE f.user1.id = :userId")
+    List<Long> findFriendIdByUser1Id(Long userId);
 
 }

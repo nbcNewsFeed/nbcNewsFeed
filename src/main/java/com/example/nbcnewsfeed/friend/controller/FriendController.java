@@ -2,6 +2,8 @@ package com.example.nbcnewsfeed.friend.controller;
 
 import com.example.nbcnewsfeed.friend.dto.*;
 import com.example.nbcnewsfeed.friend.service.FriendService;
+import com.example.nbcnewsfeed.user.dto.UserResponseDto;
+import com.example.nbcnewsfeed.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -73,13 +77,15 @@ public class FriendController {
 
     @GetMapping("/friend-list")
     @Operation(summary = "친구 목록 조회 기능", description = "해당 id 사용자의 친구 관계를 전체 조회합니다.")
-    public ResponseEntity<List<FriendshipListDto>> getFriendshipList (
+    public ResponseEntity<List<UserResponseDto>> getFriendshipList (
             HttpServletRequest request
     ){
         Long loginId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
 
-        List<FriendshipListDto> frinendshipList = friendService.getFriendshipList(loginId);
-        return new ResponseEntity<>(frinendshipList, HttpStatus.OK);
+        List<User> friendshipList = friendService.getFriendshipList(loginId);
+
+        List<UserResponseDto> friendDtos = friendshipList.stream().map(UserResponseDto::todto).toList();
+        return new ResponseEntity<>(friendDtos, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")

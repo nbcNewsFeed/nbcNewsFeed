@@ -1,5 +1,6 @@
 package com.example.nbcnewsfeed.post.dto.response;
 
+import com.example.nbcnewsfeed.post.entity.Post;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -30,5 +31,16 @@ public class PostResponseDto {
         this.numOfComments = numOfComments;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+    }
+
+    public PostResponseDto(Post post) {
+        this.id = post.getId();
+        this.userId = post.getUser().getId();
+        this.imageUrl = post.getImageUrl();
+        this.contents = post.getContents();
+        this.numOfComments = post.getNumOfComments();
+        this.createdAt = post.getCreatedAt();
+        this.modifiedAt = post.getModifiedAt();
+
     }
 }
