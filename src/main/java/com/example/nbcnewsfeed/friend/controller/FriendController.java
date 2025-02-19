@@ -45,6 +45,24 @@ public class FriendController {
 
     }
 
+    @DeleteMapping("/request-cancel")
+    @Operation(summary="친구 요청 취소 기능", description = "친구 요청을 보냈던 내역을 취소할 수 있씁니다.")
+    public ResponseEntity<String> cancelFriendRequest (
+            @RequestParam Long cancelId,
+            HttpServletRequest request
+    ){
+        Long loginId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
+
+        if (loginId.equals(cancelId)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "오류 : 현재 로그인된 Id와 친구요청 취소Id가 일치합니다.");
+        }
+
+        friendService.cancelFriendRequest(loginId, cancelId);
+
+        return new ResponseEntity<>("친구 요청 취소 성공", HttpStatus.OK);
+
+    }
+
     @PatchMapping("/response")
     @Operation(summary = "친구 수락 및 거절 기능", description = "친구 요청을 수락하거나 거절할 수 있습니다. 친구요청 테이블의 friendStatus가 변경됩니다.")
     public ResponseEntity<String> updateFriendRequest (
@@ -76,7 +94,7 @@ public class FriendController {
 
 
     @GetMapping("/friend-list")
-    @Operation(summary = "친구 목록 조회 기능", description = "해당 id 사용자의 친구 관계를 전체 조회합니다.")
+    @Operation(summary = "친구 목록 조회 기능", description = "로그인 된 사용자의 친구 관계를 전체 조회합니다.")
     public ResponseEntity<List<UserResponseDto>> getFriendshipList (
             HttpServletRequest request
     ){
@@ -89,7 +107,7 @@ public class FriendController {
     }
 
     @DeleteMapping("/delete")
-    @Operation(summary = "친구 삭제 기능 (1명)", description = "해당 id 사용자의 친구 중 한 명을 삭제할 수 있습니다.")
+    @Operation(summary = "친구 삭제 기능 (1명)", description = "로그인 된 사용자의 친구 중 한 명을 삭제할 수 있습니다.")
     public ResponseEntity<String> deleteFriend (
             @RequestParam Long deleteId, // 삭제하고 싶은 친구(사용자 Id)
             HttpServletRequest request // 로그인된 사용자
@@ -105,7 +123,7 @@ public class FriendController {
     }
 
     @DeleteMapping("/delete-all")
-    @Operation(summary = "친구 전체 삭제 기능", description = "해당 id 사용자의 친구 관계를 전체 삭제할 수 있습니다.")
+    @Operation(summary = "친구 전체 삭제 기능", description = "로그인 된 사용자의 친구 관계를 전체 삭제할 수 있습니다.")
     public ResponseEntity<String> deleteAllFriendByUserId(HttpServletRequest request){
         Long loginId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
 
