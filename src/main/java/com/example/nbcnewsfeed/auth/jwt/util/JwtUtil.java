@@ -13,6 +13,9 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+/**
+ * JwtUtil : JWT(JSON Web Token)의 생성, 검증, 파싱, 만료 처리 등의 기능을 제공하는 유틸리티 클래스
+ * */
 @Slf4j
 @Component
 public class JwtUtil {
@@ -28,7 +31,6 @@ public class JwtUtil {
 
     // JWT 생성
     public String createJwt(Long userId, String email) {
-
         Date now = new Date();
 
         return BEARER_PREFIX +
@@ -36,7 +38,6 @@ public class JwtUtil {
                     .setHeaderParam("typ", "JWT")
                     .setSubject(String.valueOf(userId)) //  JWT의 Subject 필드에 고유 식별자인 사용자의 ID를 저장
                     .claim("email", email) // JWT의 클레임(토큰에 담기는 정보)에 사용자의 이메일을 추가
-//                    .claim("authority",authority.name()) // JWT의 클레임(토큰에 담기는 정보)에 사용자의 권한(USER, ADMIN) ENUM 값 추가
                     .setIssuedAt(now) // 발급 시간
                     .setExpiration(new Date(now.getTime() + EXPIRATION)) // 만료 시간 설정(30분)
                     .signWith(secretKey, SignatureAlgorithm.HS256)  // 키와 알고리즘을 사용하여 JWT에 서명을 추가

@@ -19,17 +19,9 @@ public class LoginRequestDto {
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     private final String password;
 
-//    private Authority authority;
-
-
     public LoginRequestDto(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-//    public AuthUserRequestDto(String email, String password, Authority authority) {
-//        this.email = email;
-//        this.password = password;
-//        this.authority = authority;
-//    }
 }
