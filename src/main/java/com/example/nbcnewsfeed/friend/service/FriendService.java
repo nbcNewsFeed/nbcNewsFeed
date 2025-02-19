@@ -86,13 +86,7 @@ public class FriendService {
 
     public List<User> getFriendshipList(Long userId) {
 
-<<<<<<< HEAD
-        //deleted_at 필터 활성 메서드
-
-        User user = userService.findUserById(userId);
-=======
         List<Long> friendIdList = friendshipRepository.findFriendIdByUser1Id(userId); // 단순 아이디 나열
->>>>>>> dev
 
         return userService.findUsersByIds(friendIdList);
 
@@ -127,8 +121,6 @@ public class FriendService {
     }
 
     public List<FriendRequestListDto> getFriendRequests(Long loginId) {
-
-        //deleted_at 필터 활성 메서드
 
         List<FriendRequest> friendRequestsList = friendRequestRepository.findFriendRequestBySenderIdOrReceiverIdAndFriendStatus(loginId, loginId, FriendStatus.WAITING);
 

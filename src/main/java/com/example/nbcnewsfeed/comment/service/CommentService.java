@@ -42,11 +42,8 @@ public class CommentService {
         );
 
         commentRepository.save(comment);
-<<<<<<< HEAD
+
         post.updateNumOfComments(post.getNumOfComments() + 1);
-=======
-        post.updateNumOfComment(post.getNumOfComments() + 1);
->>>>>>> dev
 
         return new CommentResponseDto(
                 comment.getId(),
