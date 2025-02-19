@@ -6,6 +6,7 @@ import com.example.nbcnewsfeed.comment.dto.response.CommentResponseDto;
 import com.example.nbcnewsfeed.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +24,15 @@ public class CommentController {
     @PostMapping("/comments/{postId}")
     @Operation(summary = "댓글 생성", description = "댓글을 생성합니다.")
     public ResponseEntity<CommentResponseDto> save(
-            @SessionAttribute(name = "LOGIN_USER") Long userId,
+            HttpServletRequest request,
             @PathVariable Long postId,
             @RequestBody CommentSaveRequestDto dto
     ) {
+        Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
         return ResponseEntity.ok(commentService.save(userId, postId, dto));
     }
 
-    // 전체 댓글 조회
+    // 댓글 조회
     @GetMapping("/comments/{postId}")
     @Operation(summary = "댓글 조회", description = "postId로 댓글을 조회합니다.")
     public ResponseEntity<List<CommentResponseDto>> findByPost(
@@ -39,34 +41,27 @@ public class CommentController {
         return ResponseEntity.ok(commentService.findByPost(postId));
     }
 
-    // 댓글 단건 조회
-    @GetMapping("/comments/{commentId}")
-    @Operation(summary = "댓글 단건 조회", description = "commentId로 댓글을 조회합니다.")
-    public ResponseEntity<CommentResponseDto> findOne(
-            @PathVariable Long commentId
-    ) {
-        return ResponseEntity.ok(commentService.findOne(commentId));
-    }
-
     // 댓글 수정
     @PutMapping("/comments/{commentId}")
     @Operation(summary = "댓글 수정", description = "commentId로 댓글을 수정합니다.")
     public ResponseEntity<CommentResponseDto> update(
-            @SessionAttribute(name = "LOGIN_USER") Long userId,
             @PathVariable Long commentId,
+            HttpServletRequest request,
             @RequestBody CommentUpdateRequestDto dto
     ) {
+        Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
         return ResponseEntity.ok(commentService.update(commentId, userId, dto));
     }
 
     // 댓글 삭제
     @DeleteMapping("/comments/{commentId}")
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
-    public ResponseEntity<Void> delete(
-            @SessionAttribute(name = "LOGIN_USER") Long userId,
-            @PathVariable Long commentId
+    public ResponseEntity<Void> deleteById(
+            @PathVariable Long commentId,
+            HttpServletRequest request
     ) {
-        commentService.delete(commentId, userId);
+        Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
+        commentService.deleteById(commentId, userId);
         return ResponseEntity.ok().build();
     }
 }
