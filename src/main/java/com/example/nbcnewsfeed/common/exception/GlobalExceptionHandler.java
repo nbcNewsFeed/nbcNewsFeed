@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -42,5 +43,17 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse("잘못된 입력입니다.", errorMessages);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request){
+        Map<String, Object> errors = new HashMap<>();
+
+        errors.put("status", ex.getStatusCode().value());
+        errors.put("message", ex.getMessage());
+        errors.put("path", request.getRequestURI());
+
+        return ResponseEntity.status(ex.getStatusCode()).body(errors);
+    }
+
 
 }

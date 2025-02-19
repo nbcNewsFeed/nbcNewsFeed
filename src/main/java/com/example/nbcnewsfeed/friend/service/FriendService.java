@@ -50,6 +50,19 @@ public class FriendService {
     }
 
     @Transactional
+    public void cancelFriendRequest(Long loginId, Long cancelId) {
+
+        userService.findUserById(cancelId);
+
+        FriendRequest friendRequest = friendRequestRepository.findFriendRequestBySenderIdAndReceiverIdAndFriendStatus(loginId, cancelId, FriendStatus.WAITING);
+
+        if(friendRequest != null){
+            friendRequestRepository.delete(friendRequest);
+        } throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id에게 친구 요청 기록이 없습니다.");
+
+    }
+
+    @Transactional
     public String updateFriendRequest(Long loginId, Long requesterId, UpdateFriendRequestDto requestDto) {
 
         User senderUser = userService.findUserById(requesterId); // 요청보낸 사람의 Id
@@ -94,6 +107,9 @@ public class FriendService {
 
     @Transactional
     public void deleteFriend(Long loginId, Long deleteId) {
+
+        userService.findUserById(deleteId); //삭제하고싶은 id가 실제로 존재하는지 확인
+
         User user1 = userService.findUserById(loginId); // 현재 로그인된 사용자
         User user2 = userService.findUserById(deleteId); //삭제하고싶은 사용자
 
