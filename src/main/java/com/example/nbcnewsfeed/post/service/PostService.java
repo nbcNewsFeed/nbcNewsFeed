@@ -1,6 +1,4 @@
 package com.example.nbcnewsfeed.post.service;
-
-import com.example.nbcnewsfeed.friend.entity.Friendship;
 import com.example.nbcnewsfeed.friend.service.FriendService;
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
@@ -26,7 +24,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -41,9 +38,6 @@ public class PostService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final FriendService friendService;
-    //deleted_at Filter 활성화를 위한 entityManager 객체 생성
-    @PersistenceContext
-    private final EntityManager entityManager;
 
     @Transactional
     public PostSaveResponseDto save(Long userId, PostSaveRequestDto requestDto) {
@@ -73,7 +67,7 @@ public class PostService {
     public Page<PostPageResponseDto> findAllPage(int page, int size) {
 
         //deleted_at 필터 활성 메서드
-        enableSoftDeleteFilter();
+        postRepository.enableSoftDeleteFilter();
 
         // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
         int adjustedPage = (page > 0) ? page - 1 : 0;
@@ -98,12 +92,10 @@ public class PostService {
     public PostResponseDto findById(Long id) {
 
         //deleted_at 필터 활성 메서드
-        enableSoftDeleteFilter();
+        postRepository.enableSoftDeleteFilter();
 
-        //post null 검증
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
-        );
+        Post post = postRepository.findByIdWithFilterOrElseThrow(id);
+
         return new PostResponseDto(
                 post.getId(),
                 post.getUser().getId(),
@@ -190,20 +182,6 @@ public class PostService {
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
-    }
-
-    //deleted_at Filter 활성 메서드
-    @Transactional
-    public void enableSoftDeleteFilter() {
-        Session session = entityManager.unwrap(Session.class);
-        session.enableFilter("activePostFilter");
-    }
-
-    //deleted_at Filter 비활성 메서드
-    @Transactional
-    public void disableSoftDeleteFilter() {
-        Session session = entityManager.unwrap(Session.class);
-        session.disableFilter("activePostFilter");
     }
 
     public List<PostResponseDto> findFriendPost(int page, int size, Long loginId) {
