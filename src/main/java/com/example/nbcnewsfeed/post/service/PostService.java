@@ -10,7 +10,6 @@ import com.example.nbcnewsfeed.post.entity.Post;
 import com.example.nbcnewsfeed.post.repository.PostRepository;
 import com.example.nbcnewsfeed.user.entity.User;
 import com.example.nbcnewsfeed.user.repository.UserRepository;
-import com.example.nbcnewsfeed.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,7 +32,6 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final FriendService friendService;
 
     @Transactional
