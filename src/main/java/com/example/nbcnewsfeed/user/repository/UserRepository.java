@@ -2,8 +2,6 @@ package com.example.nbcnewsfeed.user.repository;
 
 import com.example.nbcnewsfeed.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,19 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
 
     // 이메일 존재 여부 확인
     boolean existsByEmail(String email);
-
-    // 아이디, 닉네임으로 사용자 조회
-    @Query("SELECT u FROM User u WHERE " +
-            "(:id IS NULL OR u.id = :id) AND " +
-            "(:nickname IS NULL OR u.nickname LIKE CONCAT('%', :nickname, '%'))")
-    List<User> findUsers(
-            @Param("id") Long id,
-            @Param("nickname") String nickname
-    );
 
     // 아이디로 사용자 조회
     default User findByIdOrElseThrow(Long id) {
@@ -45,7 +34,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndPassword(String email, String password);
 
     default User findByEmailAndPasswordOrElseThrow(String email, String password) {
-        return findByEmailAndPassword(email,password).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 이메일과 비밀번호는 존재하지 않습니다."));
+        return findByEmailAndPassword(email, password).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 이메일과 비밀번호는 존재하지 않습니다."));
     }
 
     // userId 리스트를 매개변수로 User 객체 리스트 반환
