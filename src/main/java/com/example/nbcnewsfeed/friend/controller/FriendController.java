@@ -110,6 +110,6 @@ public class FriendController {
         Long loginId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
 
         friendService.deleteAllFriendByUserId(loginId);
-        return new ResponseEntity<>("해당 아이디의 친구관계 모두 삭제 완료", HttpStatus.OK);
+        return new ResponseEntity<>("로그인 사용자의 친구관계 전체 삭제 완료", HttpStatus.OK);
     }
 }
