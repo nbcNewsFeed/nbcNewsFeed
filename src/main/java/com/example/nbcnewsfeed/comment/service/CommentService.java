@@ -70,21 +70,6 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public CommentResponseDto findOne(Long id) {
-
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-
-        return new CommentResponseDto(
-                comment.getId(),
-                comment.getUser().getId(),
-                comment.getPost().getId(),
-                comment.getContent(),
-                comment.getCreatedAt(),
-                comment.getModifiedAt());
-    }
-
     // Update
     @Transactional
     public CommentResponseDto update(

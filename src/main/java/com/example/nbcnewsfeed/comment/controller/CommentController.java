@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class CommentController {
             @RequestBody CommentSaveRequestDto dto
     ) {
         Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
-        return ResponseEntity.ok(commentService.save(userId, postId, dto));
+        return new ResponseEntity<>(commentService.save(userId, postId, dto), HttpStatus.CREATED);
     }
 
     // 댓글 조회
@@ -38,7 +39,7 @@ public class CommentController {
     public ResponseEntity<List<CommentResponseDto>> findByPost(
             @PathVariable Long postId
     ) {
-        return ResponseEntity.ok(commentService.findByPost(postId));
+        return new ResponseEntity<>(commentService.findByPost(postId), HttpStatus.OK);
     }
 
     // 댓글 수정
@@ -50,7 +51,7 @@ public class CommentController {
             @RequestBody CommentUpdateRequestDto dto
     ) {
         Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
-        return ResponseEntity.ok(commentService.update(commentId, userId, dto));
+        return new ResponseEntity<>(commentService.update(commentId, userId, dto), HttpStatus.OK);
     }
 
     // 댓글 삭제
@@ -62,6 +63,6 @@ public class CommentController {
     ) {
         Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
         commentService.deleteById(commentId, userId);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }
