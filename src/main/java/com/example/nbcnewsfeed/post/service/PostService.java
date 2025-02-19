@@ -1,5 +1,7 @@
 package com.example.nbcnewsfeed.post.service;
 
+import com.example.nbcnewsfeed.friend.entity.Friendship;
+import com.example.nbcnewsfeed.friend.service.FriendService;
 import com.example.nbcnewsfeed.post.dto.request.PostSaveRequestDto;
 import com.example.nbcnewsfeed.post.dto.request.PostUpdateRequestDto;
 import com.example.nbcnewsfeed.post.dto.response.PostPageResponseDto;
@@ -10,9 +12,11 @@ import com.example.nbcnewsfeed.post.entity.Post;
 import com.example.nbcnewsfeed.post.repository.PostRepository;
 import com.example.nbcnewsfeed.user.entity.User;
 import com.example.nbcnewsfeed.user.repository.UserRepository;
+import com.example.nbcnewsfeed.user.service.UserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,14 +28,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final FriendService friendService;
     //deleted_at Filter 활성화를 위한 entityManager 객체 생성
     @PersistenceContext
     private final EntityManager entityManager;
@@ -53,7 +62,7 @@ public class PostService {
                 user.getId(),
                 post.getImageUrl(),
                 post.getContents(),
-                post.getNumOfCount(),
+                post.getNumOfComments(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -78,7 +87,7 @@ public class PostService {
                         post.getUser().getId(),
                         post.getImageUrl(),
                         post.getContents(),
-                        post.getNumOfCount(),
+                        post.getNumOfComments(),
                         post.getCreatedAt(),
                         post.getModifiedAt()
                 )
@@ -100,7 +109,7 @@ public class PostService {
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
-                post.getNumOfCount(),
+                post.getNumOfComments(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -125,7 +134,7 @@ public class PostService {
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
-                post.getNumOfCount(),
+                post.getNumOfComments(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -177,7 +186,7 @@ public class PostService {
                 post.getUser().getId(),
                 post.getImageUrl(),
                 post.getContents(),
-                post.getNumOfCount(),
+                post.getNumOfComments(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
@@ -195,5 +204,29 @@ public class PostService {
     public void disableSoftDeleteFilter() {
         Session session = entityManager.unwrap(Session.class);
         session.disableFilter("activePostFilter");
+    }
+
+    public List<PostResponseDto> findFriendPost(int page, int size, Long loginId) {
+
+        // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
+        int adjustedPage = (page > 0) ? page - 1 : 0;
+        // pageable 객체 생성, 수정일 기준 내림차순 정렬
+        PageRequest pageable = PageRequest.of(adjustedPage, size, Sort.by("createdAt").descending());
+
+        // 1. 유저의 친구 목록 뽑아오기 (id 리스트)
+        List<Long> friendIds = friendService.findFriendIds(loginId);
+        log.info("*********** 친구 리스트 = {} ***********", friendIds.toString());
+
+        if(friendIds.isEmpty()) { // 친구 목록이 비어있을 때에는 빈 배열 반환하기
+            return Collections.emptyList();
+        }
+
+        // 2. 친구목록 통해서 어쩌구
+        Page<Post> friendPosts = postRepository.findByUserIdIn(friendIds, pageable);
+
+
+        return friendPosts.stream()
+                .map(PostResponseDto::new)
+                .collect(Collectors.toList());
     }
 }

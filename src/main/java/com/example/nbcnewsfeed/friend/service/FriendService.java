@@ -89,13 +89,16 @@ public class FriendService {
 
     }
 
-    public List<FriendshipListDto> getFriendshipList(Long userId) {
+    public List<User> getFriendshipList(Long userId) {
 
-        User user = userService.findUserById(userId);
+//        User user = userService.findUserById(userId);
+//
+//        List<Friendship> friendshipList = friendshipRepository.findFriendshipsByUser1(user);
 
-        List<Friendship> friendshipList = friendshipRepository.findFriendshipsByUser1(user);
+        List<Long> friendIdList = friendshipRepository.findFriendIdByUser1Id(userId); // 단순 아이디 나열
 
-        return friendshipList.stream().map(FriendshipListDto::toDto).collect(Collectors.toList());
+        return userService.findUsersByIds(friendIdList);
+
     }
 
     @Transactional
@@ -137,5 +140,9 @@ public class FriendService {
                         request.getFriendStatus()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public List<Long> findFriendIds(Long userId){
+        return friendshipRepository.findFriendIdByUser1Id(userId);
     }
 }

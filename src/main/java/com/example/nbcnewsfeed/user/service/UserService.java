@@ -134,5 +134,9 @@ public class UserService {
         return userRepository.findByIdOrElseThrow(id);
     }
 
+    public List<User> findUsersByIds(List<Long> userIds) {
+        return userRepository.findByIdIn(userIds);
+    }
+
 
 }
