@@ -74,13 +74,13 @@ public class PostController {
     //게시글 삭제(D)
     @DeleteMapping("/posts/{postId}")
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
-    public ResponseEntity<Void> deleteById(
+    public ResponseEntity<String> deleteById(
             @PathVariable Long postId,
             HttpServletRequest request
     ) {
         Long userId = Long.parseLong(String.valueOf(request.getAttribute("userId")));
         postService.deleteById(postId, userId);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>("게시글 삭제가 완료되었습니다.", HttpStatus.OK);
     }
 
     //삭제된 게시글 복구(삭제된 후 2주 지나기 전)
