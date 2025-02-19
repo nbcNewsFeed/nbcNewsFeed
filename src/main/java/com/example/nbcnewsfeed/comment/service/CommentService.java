@@ -35,7 +35,11 @@ public class CommentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        Comment comment = new Comment(post, user, dto.getContent());
+        Comment comment = new Comment(
+                post,
+                user,
+                dto.getContent()
+        );
 
         commentRepository.save(comment);
         post.updateNumofComment(post.getNumOfComments() + 1);
@@ -107,7 +111,7 @@ public class CommentService {
 
     // Delete
     @Transactional
-    public void delete(Long commentId, Long userId) {
+    public void deleteById(Long commentId, Long userId) {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
