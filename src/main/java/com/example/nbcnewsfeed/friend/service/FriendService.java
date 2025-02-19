@@ -149,7 +149,7 @@ public class FriendService {
                 .collect(Collectors.toList());
     }
 
-    public List<Long> findFriendIds(Long userId){
+    public List<Long> findFriendIds(Long userId) {
         return friendshipRepository.findFriendIdByUser1Id(userId);
     }
 }
