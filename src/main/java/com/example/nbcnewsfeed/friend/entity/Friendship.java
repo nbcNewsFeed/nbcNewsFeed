@@ -12,8 +12,8 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Table(name="friendship")
 @SQLRestriction("deleted=false")
-@Filter(name = "activeFriendshipFilter", condition = "(sender_id IN (SELECT id FROM user WHERE deleted_at IS NULL)) " +
-        "AND (receiver_id IN (SELECT id FROM user WHERE deleted_at IS NULL))" +
+@Filter(name = "activeFriendshipFilter", condition = "(user1_id IN (SELECT u.id FROM user u WHERE u.deleted_at IS NULL)) " +
+        "AND (user2_id IN (SELECT u.id FROM user u WHERE u.deleted_at IS NULL))" +
         "AND deleted=false")
 @FilterDef(name = "activeFriendshipFilter")
 public class Friendship extends BaseEntity {

@@ -11,8 +11,8 @@ import org.hibernate.annotations.FilterDef;
 @Getter
 @Table(name = "friend_request")
 @Filter(name = "activeFriendRequestFilter",
-        condition = "(sender_id IN (SELECT id FROM user WHERE deleted_at IS NULL)) " +
-                "AND (receiver_id IN (SELECT id FROM user WHERE deleted_at IS NULL))" )
+        condition = "(sender_id IN (SELECT u.id FROM user u WHERE u.deleted_at IS NULL)) " +
+                "AND (receiver_id IN (SELECT u.id FROM user u WHERE u.deleted_at IS NULL))" )
 @FilterDef(name = "activeFriendRequestFilter")
 public class FriendRequest extends BaseEntity {
 

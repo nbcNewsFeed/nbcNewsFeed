@@ -10,8 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
-
+public interface FriendshipRepository extends JpaRepository<Friendship, Long>, FriendshipRepositoryCustom {
 
     boolean existsFriendshipByUser1IdAndUser2Id(Long senderId, Long receiverId);
 
