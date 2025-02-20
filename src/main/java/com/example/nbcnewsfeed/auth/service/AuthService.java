@@ -6,6 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * AuthService : 로그인을 처리하는 서비스
+ * - 회원 레포지토리에서 email과 email, password 조회
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthService {

@@ -14,18 +14,15 @@ import org.springframework.util.PatternMatchUtils;
 
 import java.io.IOException;
 
+/**
+ * JwtFilter : JWT(JSON Web Token)를 검증하는 역할을 하는 서블릿 필터(Servlet Filter)
+ * */
 @Slf4j
 @RequiredArgsConstructor
 public class JwtFilter implements Filter {
 
     private final JwtUtil jwtUtil;
-
     private static final String[] WHITE_LIST = {"/users/restore", "/users/signup", "/login", "/swagger-ui/**", "/v3/api-docs/**"};
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        Filter.super.init(filterConfig);
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -42,24 +39,17 @@ public class JwtFilter implements Filter {
 
         String bearerJwt = httpRequest.getHeader("Authorization");
 
-        log.info("doFilter bearerJwt={}",bearerJwt);
-
         if (bearerJwt == null || !bearerJwt.startsWith("Bearer ")){
             httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT 토큰이 필요합니다.");
         }
 
         String jwt = jwtUtil.subStringToken(bearerJwt);
 
-        log.info("doFilter jwt={}", jwt);
-
         try{
             Claims claims = jwtUtil.extractClaims(jwt);
-            log.info("doFilter claims={}",claims);
 
             httpRequest.setAttribute("userId",claims.getSubject());
             httpRequest.setAttribute("email",claims.get("email"));
-            log.info("doFilter userId={}",claims.getSubject());
-            log.info("doFilter email={}",claims.get("email"));
 
             chain.doFilter(request,response);
         } catch (SecurityException | MalformedJwtException e) {
@@ -79,11 +69,6 @@ public class JwtFilter implements Filter {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT 토큰 검증 중 오류가 발생했습니다.");
         }
 
-    }
-
-    @Override
-    public void destroy() {
-        Filter.super.destroy();
     }
 
     private boolean isWhiteList(String requestURI) {
