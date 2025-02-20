@@ -99,6 +99,8 @@ public class FriendService {
 
     public List<User> getFriendshipList(Long userId) {
 
+        friendshipRepository.enableSoftDeleteFilterV2();
+
         List<Long> friendIdList = friendshipRepository.findFriendIdByUser1Id(userId); // 단순 아이디 나열
 
         return userService.findUsersByIds(friendIdList);
@@ -137,6 +139,8 @@ public class FriendService {
     }
 
     public List<FriendRequestListDto> getFriendRequests(Long loginId) {
+
+        friendshipRepository.enableSoftDeleteFilter();
 
         List<FriendRequest> friendRequestsList = friendRequestRepository.findFriendRequestBySenderIdOrReceiverIdAndFriendStatus(loginId, loginId, FriendStatus.WAITING);
 
