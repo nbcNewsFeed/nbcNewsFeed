@@ -1,8 +1,8 @@
-## 👉🏼 일정관리(Schedule) Develop 개인과제
+## 👉🏼 1석3조 뉴스피드 팀 프로젝트
 
-### 🙋‍♀️ 일정관리(Schedule) Develop 과제 설명
-- **일정관리(Schedule) Develop 과제**는 <u>Spring을 활용하여 일정 관리 앱을 Develop한 버전으로 구현</u>한 과제입니다.
-- **작성자 : 조예인**
+### 🙋‍♀️ 1석3조 뉴스피드 팀 프로젝트 설명
+- **### 🙋‍♀️ 1석3조 뉴스피드 팀 프로젝트**는 <u>Spring을 활용하여 뉴스피드를 구현</u>했습니다.
+- **팀원 : 조예인, 이민정, 장윤혁, 전서연, 이범서**
 
 
 ## 🛠 목차
@@ -62,7 +62,7 @@
 | 선택 댓글 삭제        | DELETE | /comments/{commentId} | path commentId | -        | 200: OK |
 
 ## 👩 ERD
-
+![Image](https://github.com/user-attachments/assets/e9e7cf5c-97b0-4eb9-8625-a9ff9162042f)
 
 ## 💥 한계점
 
