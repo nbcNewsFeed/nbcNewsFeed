@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "post")
 @FilterDef(name = "activePostFilter")
-@Filter(name = "activePostFilter", condition = "deleted_at is null")
+@Filter(name = "activePostFilter", condition = "deleted_at is null " +
+"AND user_id IN (SELECT u.id FROM user u WHERE u.deleted_at IS NULL)")
 public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
